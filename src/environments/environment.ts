@@ -1,5 +1,5 @@
 export const environment = {
     production: false,
-    apiBaseUrl: 'http://localhost:5000/',
+    apiBaseUrl: 'https://api.cprclassesadmin.com/api/',
     debugMode: true
 };
