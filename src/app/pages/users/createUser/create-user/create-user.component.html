@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="col">
+        <div>
+            <div class="card-header">
+                <span class="text-uppercase">Add a User</span>    
+            </div>
+            <div class="card-body widget-body row mbm-20">
+                <div class="col-md-4 col-12 bottom-15">   
+                    <h6> Enter Email</h6>
+                    <input [(ngModel)]="createUser.email" id="input-8" class='rounded-input'>
+                </div>
+                <div class="col-md-4 col-12 bottom-15">   
+                    <h6> Enter Password</h6>
+                    <input [(ngModel)]="createUser.password" id="input-8" class='rounded-input'>
+                </div>
+
+                <div class="col-md-4 col-12 bottom-15">   
+                    <h6>Select Role</h6>             
+                    <ngx-select-dropdown
+                        #dropdown
+                        [options]="roleList"
+                        [(ngModel)]="createUser.role"
+                        [multiple]="false"
+                        placeholder="Select a Role"
+                        [config]="dropdownSettings"
+                        >
+                    </ngx-select-dropdown>
+                </div>
+            </div>
+            
+            <div class="card-body widget-body row mbm-20">
+                <div class="col-md-4 col-12 bottom-15">   
+                    <h6> Enter First Name</h6>
+                    <input [(ngModel)]="createUser.firstname" id="input-8" class='rounded-input'>
+                </div>
+                <div class="col-md-4 col-12 bottom-15">   
+                    <h6> Enter Last Name</h6>
+                    <input [(ngModel)]="createUser.lastname" id="input-8" class='rounded-input'>
+                </div>
+                <div class="col-md-4 col-12 d-flex align-items-center justify-content-center" col-12 text-center>  
+                    <button (click)="submit()" class='custom-button'>Submit</button>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>

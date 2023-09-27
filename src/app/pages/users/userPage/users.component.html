@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col">
+        <div widget class="card">
+            <div class="card-header">
+                <span class="text-uppercase">User List</span>    
+            </div>
+
+            <div class="card-body widget-body">    
+                <div class="button-container">
+                    <!-- Add the "+" button inside the container -->
+                    <button class="add-button" (click)="addItem()">+</button>
+                </div> 
+                <ngx-datatable
+                    #table
+                    class="bootstrap"
+                    [headerHeight]="50"
+                    [limit]="10"
+                    [columnMode]="'force'"
+                    [footerHeight]="50"
+                    [rowHeight]="'auto'"
+                    [rows]="rows"
+                    [selected]="selected"
+                    [selectionType]="selection"
+                    (activate)="onActivate($event)"
+                    (select)='onSelect($event)'>
+                    <ngx-datatable-column
+                        [width]="30"
+                        [sortable]="false"
+                        [canAutoResize]="false"
+                        [draggable]="true"
+                        [resizeable]="true"
+                        [headerCheckboxable]="false"
+                        [checkboxable]="false">
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="name">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Name</span>
+                          </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="email">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Email</span>
+                          </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="role">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Role</span>
+                          </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>  
+            </div>
+        </div>
+    </div>
+</div>
