@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://api.cprclassesadmin.com/api/',
+    apiBaseUrl: 'https://constructionapi.onrender.com/',
     debugMode: false
   };
