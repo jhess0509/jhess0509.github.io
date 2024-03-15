@@ -159,9 +159,10 @@ originalGroups: GanttGroup[] = [];
       console.log(data);
       this.groups = data.groups;
       this.items = data.items;
+      this.originalGroups = [...this.groups];
+      this.originalItems = [...this.items];
     });
-    this.originalGroups = [...this.groups];
-    this.originalItems = [...this.items];
+    
   }
   contextMenuPosition = { x: '0px', y: '0px' };
   
@@ -247,6 +248,8 @@ barClick(event: GanttBarClickEvent) {
 }
 filter() {
   this.items = this.originalItems;
+  console.log(this.items);
+  console.log(this.statusFilter);
   if(this.statusFilter == "onHold"){
     this.items = this.items.filter(item => item.color === '#FF0000');
   }
