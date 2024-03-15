@@ -104,17 +104,17 @@ export class DataService {
   getProjects(): any[] {
     return this.activeProjects;
   }
-  getActiveProjects(): Observable<Project> {
+  getActiveProjects(): Observable<Project[]> {
     const URL = `${this.route}getActiveProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
-  getOnHoldProjects(): Observable<Project> {
+  getOnHoldProjects(): Observable<Project[]> {
     const URL = `${this.route}getOnHoldProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
-  getCompletedProjects(): Observable<Project> {
+  getCompletedProjects(): Observable<Project[]> {
     const URL = `${this.route}getCompletedProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
   getAllItems() {
     const URL = `${this.route}allItems`;

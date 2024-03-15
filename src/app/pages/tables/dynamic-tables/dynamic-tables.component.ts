@@ -8,6 +8,7 @@ import { UsersService } from "src/app/logic/services/users.service";
 import { DataService } from "../../dashboard/data.service";
 import { CreateUserComponent } from "../../users/createUser/create-user/create-user.component";
 import { EditTableComponent } from "./edit-table/edit-table.component";
+import { Project } from "src/app/logic/models/project";
 
 @Component({
   selector: 'az-dynamic-tables',
@@ -37,7 +38,7 @@ export class DynamicTablesComponent {
   selectedHoliday: string = "";
   selectedHolidayDate: any;
   startDate:any = {};
-  activeProjects: any[];
+  activeProjects: Project[];
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -141,8 +142,10 @@ export class DynamicTablesComponent {
       this.subs.add(this.dataService.createProjectApi(project)
         .subscribe((res:any) => {
           console.log(this.dataService.getActiveProjects);
-          //this.activeProjects = this.dataService.getActiveProjects();
-          //this.activeProjects = [...this.activeProjects];
+          this.dataService.getActiveProjects().subscribe((data) => {
+            this.activeProjects = data;
+            this.activeProjects = [...this.activeProjects];
+          });
         }));
     }
     catch{
