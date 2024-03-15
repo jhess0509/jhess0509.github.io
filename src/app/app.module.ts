@@ -21,6 +21,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { NgMultiselectDropdown3Module } from 'ng-multiselect-dropdown3';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { AuthguardService } from './logic/services/authguard.service';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { DataService } from './pages/dashboard/data.service';
+import { NgxGanttModule } from '@worktile/gantt';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -39,9 +43,11 @@ import { AuthguardService } from './logic/services/authguard.service';
     NgxDatatableModule,
     MatDialogModule,
     NgMultiselectDropdown3Module,
-    SelectDropDownModule
+    SelectDropDownModule,
+    NgxGanttModule,
+    MatMenuModule
   ],
-  providers: [AppConfig, OrderServiceService, DatePipe, ProductService, LoginService, UsersService],
+  providers: [AppConfig, {provide: LocationStrategy, useClass: HashLocationStrategy}, OrderServiceService, DatePipe, ProductService, LoginService, UsersService, DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

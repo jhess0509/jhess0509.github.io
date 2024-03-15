@@ -1,26 +1,6 @@
 <nav class="nav az-navbar fixed-top">
     <a class="navbar-brand" routerLink="/" (click)="closeSubMenus()">
-        <img src="assets/img/logo/cpr_logo.png"> 
+        <img src="assets/img/logo/siteworks.jpg" alt="Siteworks Logo"> 
     </a>
     <div id="lines" class="transition" (click)="toggleMenu()"></div>
-
-    <ul class="nav right-section">
-        <li class="nav-item">
-          <div class="dropdown float-right user-menu">
-              <a class="dropdown-toggle user-link" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                  <img src="assets/cpr.png" alt="Image">
-                  <span class="d-lg-inline d-none"> {{name}} </span>
-              </a>
-
-              <ul class="dropdown-menu">
-                <li class="user-info">
-                    <p>
-                        {{name}}
-                    </p>
-                </li>
-                <a class="dropdown-item" routerLink="/login"><i class="fa fa-power-off"></i>Log out</a>
-            </ul>
-          </div>
-        </li>
-    </ul>
 </nav>

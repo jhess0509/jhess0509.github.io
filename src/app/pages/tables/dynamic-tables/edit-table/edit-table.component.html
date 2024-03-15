@@ -1,76 +1,26 @@
 <div class="row">
     <div class="col">
-        <div>
+        <div class="card">
             <div class="card-header">
                 <span class="text-uppercase">Edit</span>    
             </div>
-            <div class="card-body widget-body row mbm-20">
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6> Email </h6>
-                    <input [(ngModel)]="user.email" class='rounded-input'>
-                </div>
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6> Phone Number </h6>
-                    <input [(ngModel)]="user.phone" id="input-8" class='rounded-input'>
+            <div class="card-body widget-body row mbm-20" style="height: 100%;">
+                <!-- Select Type and Input vertically stacked on small screens and side by side on larger screens -->
+                <div class="col-md-6 col-12 bottom-15">   
+                    <div class="row">
+                        <div class="col-md-12 col-12 bottom-15">  
+                            <h6> Enter Project Task</h6>
+                            <input [(ngModel)]="selectedTask" id="input-8" class='rounded-input form-control-lg'>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6>Product Filter</h6>             
-                    <ng-select [items]="productFilterList" 
-                        bindLabel="label" 
-                        bindValue="value" 
-                        [multiple]="false"
-                        disabled="true"
-                        searchPlaceholder="Select Product"
-                        [(ngModel)]="user.product_id">
-                    </ng-select>
-                </div>
-            </div>
-            <div class="card-body widget-body row mbm-20">
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6> First Name </h6>
-                    <input [(ngModel)]="user.firstname" id="input-8" class='rounded-input'>
-                </div>
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6> Last Name </h6>
-                    <input [(ngModel)]="user.lastname" id="input-8" class='rounded-input'>
-                </div>
-                <div class="col-md-4 col-12 bottom-15">   
-                    <h6>Status Filter</h6>             
-                    <ng-select [items]="data.statusFilters" 
-                        bindLabel="label" 
-                        bindValue="value" 
-                        [multiple]="false"
-                        searchPlaceholder="Select Status"
-                        [(ngModel)]="user.status">
-                    </ng-select>
-                </div>
-            </div>
-            <div class="card-body widget-body row mbm-20">
-                <div class="col-md-4 d-flex flex-column align-items-center justify-content-center text-center" text-center> 
-                    <h6>Start Time</h6> 
-                    <mat-form-field>
-                        <input readonly matInput [matDatepicker]="startdatepicker" [value]="startDate.value">
-                        <mat-datepicker-toggle matSuffix [for]="startdatepicker" [disabled]="true"></mat-datepicker-toggle>
-                        <mat-datepicker #startdatepicker [disabled]="true"></mat-datepicker>
-                    </mat-form-field>
-                    <timepicker [(ngModel)]="startTime" (timeOutput)="onTimeSelected($event)" [disabled]="true"></timepicker>
-                </div>
-                <div class="col-md-4 d-flex flex-column align-items-center justify-content-center text-center" text-center>
-                    <h6>End Time</h6>   
-                    <mat-form-field>
-                        <input readonly matInput [matDatepicker]="enddatepicker" [value]="endDate.value">
-                        <mat-datepicker-toggle matSuffix [for]="enddatepicker" [disabled]="true"></mat-datepicker-toggle>
-                        <mat-datepicker #enddatepicker [disabled]="true"></mat-datepicker>
-                    </mat-form-field>
-                    <timepicker [(ngModel)]="endTime" (timeOutput)="onTimeSelected($event)" [disabled]="true"></timepicker>
-                </div>
-                <div class="col-md-4 d-flex flex-column align-items-center justify-content-center text-center" text-center>   
+                <!-- Buttons -->
+                <div class="col-md-6 col-12 d-flex flex-column align-items-center justify-content-center text-center">   
                     <button (click)="submit()" class='custom-button'>Submit</button>
-                    <button (click)="submit()" class='custom-button' style="margin-top: 30px;">Cancel</button>
+                    <button (click)="cancel()" class='custom-button' style="margin-top: 30px;">Cancel</button>
                 </div>
             </div>
-            
         </div>
     </div>
 </div>

@@ -17,6 +17,9 @@ import { MatTimepickerModule } from 'mat-timepicker';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { BrowserModule } from '@angular/platform-browser';
+import { EpochToDatePipe } from 'src/app/logic/services/epoch.pipe';
+import { EpochBetweenDatesPipe } from 'src/app/logic/services/epoch.comparator.pipe';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dynamic-tables', pathMatch: 'full'},
@@ -45,7 +48,8 @@ export const routes: Routes = [
   declarations: [
     BasicTablesComponent,
     DynamicTablesComponent,
-    EditTableComponent
+    EditTableComponent,
+    EpochToDatePipe,
   ]
 })
 export class TablesModule { }

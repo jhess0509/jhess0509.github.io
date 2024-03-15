@@ -6,6 +6,7 @@ import { DirectivesModule } from '../../theme/directives/directives.module';
 import { GoogleMapsComponent } from './google-maps/google-maps.component';
 import { LeafletMapsComponent } from './leaflet-maps/leaflet-maps.component';
 import { VectorMapsComponent } from './vector-maps/vector-maps.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'googlemaps', pathMatch: 'full'},
@@ -19,7 +20,8 @@ export const routes: Routes = [
     CommonModule,
     DirectivesModule,
     RouterModule.forChild(routes),
-    GoogleMapsModule
+    GoogleMapsModule,
+    NgxDatatableModule
   ],
   declarations: [GoogleMapsComponent, LeafletMapsComponent, VectorMapsComponent]
 })

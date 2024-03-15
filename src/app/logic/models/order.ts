@@ -1,5 +1,6 @@
 export interface Order {
     id: number,
+    order_id: number,
     parent_id: number,
     status: string,
     currency: string,

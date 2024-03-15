@@ -35,19 +35,6 @@ export class UsersComponent {
   }
 
   loadUsers() {
-    this.subs.add(this.usersService.getUsers()
-    .subscribe((res: any) => {
-      this.rows = res.retUsers;
-      
-      this.rows = this.rows.map(row => ({
-        name: row['firstname'] + " " + row['lastname'],
-        email: row['email'],
-        role: row['role']
-      }));
-    },
-    (err: HttpErrorResponse) => {
-      console.log(err);
-    }));
   }
 
   addItem(): void {

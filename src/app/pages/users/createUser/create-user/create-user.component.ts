@@ -29,61 +29,21 @@ export class CreateUserComponent {
   constructor(public dialogRef: MatDialogRef<CreateUserComponent>, private usersService: UsersService, private toastr: ToastrService) {}
   
   ngOnInit() {
-    this.loadUserRoles();
-    //this.loadUsers();
   }
 
   submit(){
-    let submit = true;
-    if(this.createUser.email == null || this.createUser.email == '' || !this.expression.test(this.createUser.email)){
-      this.toastr.error('Email must be Non Blank and Valid', 'Invalid Email');
-      submit = false;
-    }
-    if(this.createUser.password == null || this.createUser.password.length < 8 || !this.containsUppercase(this.createUser.password)){
-      this.toastr.error('Password Must be 8 characters Long with a Capital', 'Invalid Password',);
-      submit = false;
-    }
-    if(this.createUser.role == null){
-      this.toastr.error('Must Select a Role from the Dropdown', 'Invalid Role')
-      submit = false;
-    }
-    if(this.createUser.firstname == null || this.createUser.firstname == ''){
-      this.toastr.error('Please Enter a First Name', 'Invalid First Name')
-      submit = false;
-    }
-    if(this.createUser.lastname == null || this.createUser.lastname == ''){
-      this.toastr.error('Please Enter a Last Name', 'Invalid Last Name')
-      submit = false;
-    }
-
-    if(submit){
-      try{
-        this.subs.add(this.usersService.createUser(this.createUser)
-          .subscribe((res:any) => {
-            this.toastr.success("User Succesfully Created")
-            this.dialogRef.close();
-          }));
-      }
-      catch{
-        this.toastr.error("Error Creating User");
-      }
-      
-    }
+    this.usersService.createUser(this.createUser);
+    this.dialogRef.close();
+  }
+  cancel(){
+    this.dialogRef.close();
   }
 
   containsUppercase(str: string) {
     return /[A-Z]/.test(str);
   }
 
-  loadUserRoles() {
-    this.subs.add(this.usersService.getRoles()
-    .subscribe((res: any) => {
-      this.roleList = res;
-    },
-    (err: HttpErrorResponse) => {
-      console.log(err);
-    }));
-  }
+
 
   dropdownSettings= {
     singleSelection: false,

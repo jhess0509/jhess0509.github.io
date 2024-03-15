@@ -1,114 +1,58 @@
-@import "../../theme/styles/variables";
-// @import "../../../../node_modules/bootstrap/scss/_variables";
-// @import "../../../../node_modules/bootstrap/scss/mixins";
+@use "@worktile/gantt/styles/index.scss";
 
-.info-box{    
-    color: $default-color;
-    .card-block{
-        padding: 1rem;
-    }
-    .info-box-icon{
-        display: flex;
-        font-size: 50px;
-        opacity: 0.9;
-    }
-    h2, h6, span, p{
-        font-weight: $font-light;
-        letter-spacing: 0.03em;
-    }
-    h6{
-        white-space: nowrap;
-        font-size: 14px;
-    }
-    p{
-        font-size: 14px;
-        line-height: 1;
-    }
+body, html {
+  margin: 0;
+  padding: 0;
 }
 
-.small-info-box{
-    padding: 8px;
-    color: $default-color;
-    background-color: $info-color;
-    div.media{
-        align-items: center;
-    }
-    i{
-        font-size: 28px;
-    }
-    h6, span{
-        font-weight: $font-normal;
-    }
-    h6{
-        font-size: 14px;
-    }
-}
-
-.user-info-box{
-    color: #fff;   
-    .card-body{
-        padding: 3px;
-        img{
-            width: 84px;
-        }
-        h6{
-            display: block;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-weight: 300;
-        }
-        a{
-            font-size: 20px;
-            color: $default-color;
-        }
-    }
-}
-
-
-.live-tile{
-    margin: 0;
+.container {
+    height: 100%;
     width: 100%;
-    color: inherit;    
 }
+.top-left-button {
+    margin: 10px;
+  }
 
-
-.weather{
-    img{
-        width: auto !important;
-        height: 246px;
-    }
-    h2, p{
-        font-weight: 300;
-        color: $default-color;
-    }
-    span{
-        color: $default-color;
-    }
-    .current-temperature{
-        font-size: 70px;
-        color: $default-color;
-        display: inline-block;
-    }
-    .degree{
-        color: $default-color;
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 20px;
-        font-size: 20px;
-    }
-    .card-body{
-        padding: 0;
-        canvas{
-            display: inline-block;
-            vertical-align: middle;
-        }
-    }
-    .line{
-        padding: 5px 15px;
-        border-bottom: 1px solid rgba($main-color,0.2);        
-        &:last-child{
-            border:none;
-        }
-    }
-}
+  .example-menu {
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 180px;
+    max-width: 280px;
+    background-color: rgba(255, 255, 255);
+    padding: 6px 0;
+  }
+  
+  .example-menu-item,
+  .example-standalone-trigger {
+    background-color: transparent;
+    cursor: pointer;
+    border: none;
+  
+    user-select: none;
+    min-width: 64px;
+    line-height: 36px;
+    padding: 0 16px;
+  
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex: 1;
+  }
+  
+  .example-menu-item:hover {
+    background-color: rgb(208, 208, 208);
+  }
+  
+  .example-menu-item:active {
+    background-color: rgb(170, 170, 170);
+  }
+  
+  .example-standalone-item {
+    background-color: rgb(239, 239, 239);
+  }
+  .example-standalone-item:hover {
+    background-color: rgb(208, 208, 208);
+  }
+  .example-standalone-item[aria-expanded='true'] {
+    background-color: rgb(208, 208, 208);
+  }

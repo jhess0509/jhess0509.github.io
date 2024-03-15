@@ -1,4 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { DataService } from '../../dashboard/data.service';
 
 @Component({
   selector: 'az-google-maps',
@@ -8,10 +10,48 @@ import { Component, ViewEncapsulation } from '@angular/core';
 })
 
 export class GoogleMapsComponent {
-  center: google.maps.LatLngLiteral = { lat: 45.421530, lng: -75.697193 };
-  zoom = 7;
-  markerOptions: google.maps.MarkerOptions = { draggable: false };
-  markerPositions: google.maps.LatLngLiteral[] = [
-    { lat: 45.421530, lng: -75.697193 }
-  ];
+  subs = new Subscription();
+  activeProjects: any[];
+  onHoldProjects: any[];
+  completedProjects: any[];
+
+  constructor( private dataService: DataService,) { }
+
+  deleteRowProject(row: any) {
+    this.activeProjects = this.activeProjects.filter(item => item !== row);
+  }
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    try{
+      this.subs.add(this.dataService.getActiveProjects()
+        .subscribe((res:any) => {
+          this.activeProjects = res
+          this.activeProjects = [...this.activeProjects];
+        }));
+    }
+    catch{
+    }
+    try{
+      this.subs.add(this.dataService.getOnHoldProjects()
+        .subscribe((res:any) => {
+          this.onHoldProjects = res
+          this.onHoldProjects = [...this.onHoldProjects];
+        }));
+    }
+    catch{
+    }
+    try{
+      this.subs.add(this.dataService.getCompletedProjects()
+        .subscribe((res:any) => {
+          this.completedProjects = res
+          this.completedProjects = [...this.completedProjects];
+        }));
+    }
+    catch{
+    }
+  }
 }

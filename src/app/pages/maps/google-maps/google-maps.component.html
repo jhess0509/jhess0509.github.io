@@ -1,19 +1,183 @@
-<div class="row googlemap mbm-20">
-  <div class="col">
-    <div widget class="card">
-      <div class="card-header">
-        <span>Google Maps</span>
-        <div class="widget-controls">                          
-            <a data-widgster="close" href="#" class="transition"><i class="fa fa-times"></i></a>              
-        </div>        
-      </div>
-      <div class="card-body widget-body">
-        <google-map [center]="center" [zoom]="zoom">
-          <map-marker *ngFor="let markerPosition of markerPositions"
-                      [position]="markerPosition"
-                      [options]="markerOptions"></map-marker>
-        </google-map>
-      </div>
+<div>
+  <div class="card col-md-12 mb-2">
+    <div class="card-header">
+        <span class="text-uppercase">Active Project List</span>
     </div>
-  </div>
+
+        <div class="card-body widget-body">    
+            <ngx-datatable
+            #taskTable
+            class="bootstrap"
+            [headerHeight]="50"
+            [limit]="10"
+            [columnMode]="'force'"
+            [footerHeight]="50"
+            [rowHeight]="'auto'"
+            [rows]="activeProjects">
+                <ngx-datatable-column
+                    [width]="30"
+                    [sortable]="false"
+                    [canAutoResize]="false"
+                    [draggable]="true"
+                    [resizeable]="true"
+                    [headerCheckboxable]="false"
+                    [checkboxable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="name">
+                    <ng-template ngx-datatable-header-template>
+                        <span>Project Name</span>
+                        </ng-template>
+                    <ng-template ngx-datatable-cell-template let-value="value">
+                        {{value}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="companyName">
+                    <ng-template ngx-datatable-header-template>
+                        <span>Project Manager</span>
+                        </ng-template>
+                    <ng-template ngx-datatable-cell-template let-value="value">
+                        {{value}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="start">
+                    <ng-template ngx-datatable-header-template>
+                    <span>Start Date</span>
+                    </ng-template>
+                    <ng-template ngx-datatable-cell-template let-value="value">
+                    {{ value | date: 'medium' }} <!-- or use a custom format -->
+                    </ng-template>
+                </ngx-datatable-column>
+             
+                <ngx-datatable-column name="end">
+                    <ng-template ngx-datatable-header-template>
+                    <span>End Date</span>
+                    </ng-template>
+                    <ng-template ngx-datatable-cell-template let-value="value">
+                    {{ value | date: 'medium' }} <!-- or use a custom format -->
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>  
+        </div>
+    </div>
+    <div class="card col-md-12 mb-2">
+      <div class="card-header">
+          <span class="text-uppercase">On Hold Project List</span>
+      </div>
+  
+          <div class="card-body widget-body">    
+              <ngx-datatable
+              #taskTable
+              class="bootstrap"
+              [headerHeight]="50"
+              [limit]="10"
+              [columnMode]="'force'"
+              [footerHeight]="50"
+              [rowHeight]="'auto'"
+              [rows]="onHoldProjects">
+                  <ngx-datatable-column
+                      [width]="30"
+                      [sortable]="false"
+                      [canAutoResize]="false"
+                      [draggable]="true"
+                      [resizeable]="true"
+                      [headerCheckboxable]="false"
+                      [checkboxable]="false">
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="name">
+                      <ng-template ngx-datatable-header-template>
+                          <span>Project Name</span>
+                          </ng-template>
+                      <ng-template ngx-datatable-cell-template let-value="value">
+                          {{value}}
+                      </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="companyName">
+                      <ng-template ngx-datatable-header-template>
+                          <span>Project Manager</span>
+                          </ng-template>
+                      <ng-template ngx-datatable-cell-template let-value="value">
+                          {{value}}
+                      </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="start">
+                      <ng-template ngx-datatable-header-template>
+                      <span>Start Date</span>
+                      </ng-template>
+                      <ng-template ngx-datatable-cell-template let-value="value">
+                      {{ value | date: 'medium' }} <!-- or use a custom format -->
+                      </ng-template>
+                  </ngx-datatable-column>
+               
+                  <ngx-datatable-column name="end">
+                      <ng-template ngx-datatable-header-template>
+                      <span>End Date</span>
+                      </ng-template>
+                      <ng-template ngx-datatable-cell-template let-value="value">
+                      {{ value | date: 'medium' }} <!-- or use a custom format -->
+                      </ng-template>
+                  </ngx-datatable-column>
+              </ngx-datatable>  
+          </div>
+      </div>
+      <div class="card col-md-12 mb-2">
+        <div class="card-header">
+            <span class="text-uppercase">Completed Project List</span>
+        </div>
+    
+            <div class="card-body widget-body">    
+                <ngx-datatable
+                #taskTable
+                class="bootstrap"
+                [headerHeight]="50"
+                [limit]="10"
+                [columnMode]="'force'"
+                [footerHeight]="50"
+                [rowHeight]="'auto'"
+                [rows]="completedProjects">
+                    <ngx-datatable-column
+                        [width]="30"
+                        [sortable]="false"
+                        [canAutoResize]="false"
+                        [draggable]="true"
+                        [resizeable]="true"
+                        [headerCheckboxable]="false"
+                        [checkboxable]="false">
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="name">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Project Name</span>
+                            </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="companyName">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Project Manager</span>
+                            </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="start">
+                        <ng-template ngx-datatable-header-template>
+                        <span>Start Date</span>
+                        </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                        {{ value | date: 'medium' }} <!-- or use a custom format -->
+                        </ng-template>
+                    </ngx-datatable-column>
+                 
+                    <ngx-datatable-column name="end">
+                        <ng-template ngx-datatable-header-template>
+                        <span>End Date</span>
+                        </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                        {{ value | date: 'medium' }} <!-- or use a custom format -->
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>  
+            </div>
+        </div>
+    
 </div> 

@@ -48,7 +48,9 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/ngx-toastr/toastr.css"
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/@worktile/gantt/styles/index.scss",
+              "./node_modules/ngx-tethys/styles/index.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
