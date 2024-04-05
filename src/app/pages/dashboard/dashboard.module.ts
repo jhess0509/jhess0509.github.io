@@ -1,7 +1,7 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DirectivesModule } from '../../theme/directives/directives.module';
 import { PipesModule } from '../../theme/pipes/pipes.module';
 import { DashboardComponent } from './dashboard.component';
@@ -23,6 +23,16 @@ import { MatMenuModule } from '@angular/material/menu';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import { ActionNeededComponent } from './action-needed/action-needed.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { AddTaskComponent } from './add-task/add-task.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatTimepickerModule } from 'mat-timepicker';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { NgMultiselectDropdown3Module } from 'ng-multiselect-dropdown3';
+import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { EditTaskComponent } from './edit-task/edit-task.component';
 
 
 export const routes: Routes = [
@@ -43,7 +53,18 @@ export const routes: Routes = [
     CdkMenuTrigger,
     CdkMenu,
     CdkMenuItem,
-    NgSelectModule
+    NgSelectModule,
+    MatInputModule,
+    MatDatepickerModule,
+    NgxMaterialTimepickerModule,
+    MatNativeDateModule,
+    MatTimepickerModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgxDatatableModule,
+    NgMultiselectDropdown3Module,
+    SelectDropDownModule,
   ],
   providers:    [ 
     {
@@ -66,7 +87,9 @@ export const routes: Routes = [
     FeedComponent,
     DatamapComponent,
     DynamicChartComponent,
-    ActionNeededComponent
+    ActionNeededComponent,
+    AddTaskComponent,
+    EditTaskComponent
   ]
 })
 

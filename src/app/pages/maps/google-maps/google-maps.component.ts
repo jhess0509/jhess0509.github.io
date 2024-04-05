@@ -29,6 +29,7 @@ export class GoogleMapsComponent {
     try{
       this.subs.add(this.dataService.getActiveProjects()
         .subscribe((res:any) => {
+          console.log(res);
           this.activeProjects = res
           this.activeProjects = [...this.activeProjects];
         }));

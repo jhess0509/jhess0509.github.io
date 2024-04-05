@@ -9,7 +9,6 @@ import { Project } from "src/app/logic/models/project";
 
 @Injectable()
 export class DataService {
-
   static colors = {
     green: "#6aa84f",
     yellow: "#f1c232",
@@ -104,20 +103,28 @@ export class DataService {
   getProjects(): any[] {
     return this.activeProjects;
   }
-  getActiveProjects(): Observable<Project> {
+  getActiveProjects(): Observable<Project[]> {
     const URL = `${this.route}getActiveProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
-  getOnHoldProjects(): Observable<Project> {
+  getOnHoldProjects(): Observable<Project[]> {
     const URL = `${this.route}getOnHoldProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
-  getCompletedProjects(): Observable<Project> {
+  getCompletedProjects(): Observable<Project[]> {
     const URL = `${this.route}getCompletedProjects`;
-    return this.http.get<Project>(URL);
+    return this.http.get<Project[]>(URL);
   }
   getAllItems() {
     const URL = `${this.route}allItems`;
+    return this.http.get<any>(URL);
+  }
+  getHolidays(): Observable<any[]> {
+    const URL = `${this.route}holidays`;
+    return this.http.get<any>(URL);
+  }
+  getDict(): Observable<any> {
+    const URL = `${this.route}getDict`;
     return this.http.get<any>(URL);
   }
   addProject(project:any): void{
@@ -167,6 +174,27 @@ export class DataService {
     const URL = `${this.route}createProject`;
     console.log(URL);
     return this.http.post<null>(URL, project);
+  }
+
+  createTask(task: any): Observable<null> {
+    const URL = `${this.route}createTask`;
+    console.log(URL);
+    return this.http.post<null>(URL, task);
+  }
+
+  addHoliday(holiday: any): Observable<null> {
+    const URL = `${this.route}createHoliday`;
+    console.log(URL);
+    return this.http.post<null>(URL, holiday);
+  }
+
+  updateTask(item: any): Observable<null> {
+    const URL = `${this.route}updateTask`;
+    return this.http.post<null>(URL,item);
+  }
+  editTask(item: any): Observable<null> {
+    const URL = `${this.route}editTask`;
+    return this.http.put<null>(URL,item);
   }
   createRandomProjects(length:number) {
     const groups: GanttGroup[] = [];

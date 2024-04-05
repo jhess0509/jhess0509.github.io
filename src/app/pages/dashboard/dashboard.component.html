@@ -4,12 +4,13 @@
     <button class="example-menu-item" cdkMenuItem (click)="actionNeededButtonClick()">Action Needed</button>
     <button class="example-menu-item" cdkMenuItem (click)="onHoldButtonClick()">On Hold</button>
     <button class="example-menu-item" cdkMenuItem (click)="completedButtonClick()">Completed</button>
+    <button class="example-menu-item" cdkMenuItem (click)="editButtonClick()">Edit Task</button>
   </div>
 </ng-template>
 <div class="container" style="height: 100vh; width: 100vw;" (contextmenu)="onContextMenu($event)" *ngIf="showComponent">
   <div class="row">
     <div class="col-md-4 col-12">
-      <h6>Product Filter</h6>
+      <h6>Project Filter</h6>
       <ng-select [items]="statusFilters" 
                  bindLabel="label" 
                  bindValue="value" 
@@ -30,9 +31,12 @@
                  [(ngModel)]="foremanFilter">
       </ng-select>
     </div>
-    <div class="col-md-4 col-12">
-      <button (click)="expandAllGroups()">
+    <div class="col-md-4 col-12 d-flex">
+      <button (click)="expandAllGroups()" class="align-self-center mr-1">
         {{ expanded ? 'Collapse' : 'Expand' }}
+      </button>
+      <button (click)="addTask()" class="align-self-center">
+        {{ 'Add Task' }}
       </button>
     </div>
   </div>
@@ -48,6 +52,7 @@
     [viewOptions]="viewOptions"
     (contextmenu)="onGanttContextMenu($event)"
     (barClick)="barClick($event)"
+    (dragEnded)="dragEnded($event)"
   >
     <!-- Add your Gantt chart configuration here -->
     <ngx-gantt-table [draggable]="true">
@@ -55,7 +60,9 @@
         <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
       </ngx-gantt-column>
       <ngx-gantt-column name="Foremen" width="180px">
-        <ng-template #cell let-item="item">{{ getManagerName(item.group_id) }} </ng-template>
+        <ng-template #cell let-item="item">
+          {{ getManagerName(item.id) }} 
+        </ng-template>
       </ngx-gantt-column>
     </ngx-gantt-table>
 

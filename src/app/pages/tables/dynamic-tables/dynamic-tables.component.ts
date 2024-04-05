@@ -8,6 +8,7 @@ import { UsersService } from "src/app/logic/services/users.service";
 import { DataService } from "../../dashboard/data.service";
 import { CreateUserComponent } from "../../users/createUser/create-user/create-user.component";
 import { EditTableComponent } from "./edit-table/edit-table.component";
+import { Project } from "src/app/logic/models/project";
 
 @Component({
   selector: 'az-dynamic-tables',
@@ -37,7 +38,7 @@ export class DynamicTablesComponent {
   selectedHoliday: string = "";
   selectedHolidayDate: any;
   startDate:any = {};
-  activeProjects: any[];
+  activeProjects: Project[];
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -51,23 +52,42 @@ export class DynamicTablesComponent {
     holidayEnd: new FormControl<Date | null>(null),
   });
   updateValue(event, cell, rowIndex) {
-    console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
     this.projectRows[rowIndex][cell] = event.target.value;
     this.projectRows = [...this.projectRows];
-    console.log('UPDATED!', this.projectRows[rowIndex][cell]);
-    console.log(this.projectRows);
   }
   updateValueName(event, cell, rowIndex) {
-    console.log('inline editing rowIndex', rowIndex);
     this.editingName[rowIndex + '-' + cell] = false;
     this.rows[rowIndex][cell] = event.target.value;
     this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
-    console.log(this.rows);
   }
 
-  constructor(private usersService: UsersService, private dataService: DataService, public dialog: MatDialog, private cdr: ChangeDetectorRef) { }
+  constructor(private usersService: UsersService, private dataService: DataService, public dialog: MatDialog, private cdr: ChangeDetectorRef) { 
+    const selectedManager = localStorage.getItem('selectedManager');
+    if (selectedManager) {
+      this.selectedManager = selectedManager;
+    }
+    const range = localStorage.getItem('range');
+    if (range) {
+      this.range.setValue(JSON.parse(range));
+    }
+    const taskRange = localStorage.getItem('taskrange');
+    if (taskRange) {
+      this.taskrange.setValue(JSON.parse(taskRange));
+    }
+    const selectedTask = localStorage.getItem('selectedTask');
+    if (selectedTask) {
+      this.selectedTask = selectedTask;
+    }
+    const selectedTasks = localStorage.getItem('selectedTasks');
+    if (selectedTasks) {
+      this.selectedTasks = JSON.parse(selectedTasks);
+    }
+    const project = localStorage.getItem('project');
+    if (selectedTasks) {
+      this.project = JSON.parse(project);
+    }
+  }
 
   ngOnInit() {
     this.loadUsers();
@@ -92,9 +112,17 @@ export class DynamicTablesComponent {
     try{
       this.subs.add(this.dataService.getActiveProjects()
         .subscribe((res:any) => {
-          console.log(res)
           this.activeProjects = res
           this.activeProjects = [...this.activeProjects];
+        }));
+    }
+    catch{
+    }
+    try{
+      this.subs.add(this.dataService.getHolidays()
+        .subscribe((res:any) => {
+          this.holidayRows = res
+          this.holidayRows = [...this.holidayRows];
         }));
     }
     catch{
@@ -103,18 +131,14 @@ export class DynamicTablesComponent {
     this.rows = [...this.rows];
     this.projectRows = [...this.projectRows];
     this.activeProjects = [...this.activeProjects];
-    this.cdr.detectChanges();
   }
   submit(){
-    console.log(this.availableTasks);
     this.selectedTasks.push({
       task: this.selectedTask,
       start: new Date(this.taskrange.get('taskstart').value),
       end: new Date(this.taskrange.get('taskend').value)
     });
     this.selectedTasks = [...this.selectedTasks];
-    console.log(this.selectedTasks);
-    this.cdr.detectChanges();
   }
   toggleEdit(row): void {
     row.isEditing = !row.isEditing;
@@ -140,9 +164,10 @@ export class DynamicTablesComponent {
     try{
       this.subs.add(this.dataService.createProjectApi(project)
         .subscribe((res:any) => {
-          console.log(this.dataService.getActiveProjects);
-          //this.activeProjects = this.dataService.getActiveProjects();
-          //this.activeProjects = [...this.activeProjects];
+          this.dataService.getActiveProjects().subscribe((data) => {
+            this.activeProjects = data;
+            this.activeProjects = [...this.activeProjects];
+          });
         }));
     }
     catch{
@@ -166,6 +191,14 @@ export class DynamicTablesComponent {
       start: new Date(this.holidayRange.get('holidayStart').value),
       end: new Date(this.holidayRange.get('holidayEnd').value)
     };
+    this.dataService.addHoliday(holiday).subscribe(
+      (response) => {
+        console.log('Project status updated successfully:', response);
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
     this.holidayRows.push(holiday);
     this.holidayRows = [...this.holidayRows];
     this.holidayRange.reset();
@@ -176,7 +209,6 @@ export class DynamicTablesComponent {
   }
   deleteRowProject(row: any) {
     this.activeProjects = this.activeProjects.filter(item => item !== row);
-    console.log(row);
     this.dataService.deleteRow(row);
   }
   deleteRowManager(row: any) {
@@ -211,7 +243,6 @@ export class DynamicTablesComponent {
 
     dialogRef.afterClosed().subscribe((result: any) => {
       this.loadUsers();
-      console.log(this.usersService.getProjectTasks());
     });
   }
 
@@ -229,6 +260,12 @@ export class DynamicTablesComponent {
     if (this.subs) {
       this.subs.unsubscribe();
     }
+    localStorage.setItem('selectedManager', this.selectedManager);
+    localStorage.setItem('range', JSON.stringify(this.range.value));
+    localStorage.setItem('taskrange', JSON.stringify(this.taskrange.value));
+    localStorage.setItem('selectedTask', this.selectedTask);
+    localStorage.setItem('selectedTasks', JSON.stringify(this.selectedTasks));
+    localStorage.setItem('project', JSON.stringify(this.project));
   }
 
 }
