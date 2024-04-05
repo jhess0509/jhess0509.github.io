@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          <span class="text-uppercase">Add a Task</span>
+        </div>
+        <div class="card-body widget-body">
+          <!-- Inputs at the top -->
+          <div class="row py-4">
+            <div class="col-md-6">
+              <h6>Select Project</h6>
+              <ng-select [items]="groups" 
+                         bindLabel="title" 
+                         bindValue="id" 
+                         [multiple]="false"
+                         searchPlaceholder="Select Project"
+                         [(ngModel)]="selectedProject">
+              </ng-select>
+            </div>
+            <div class="col-md-6">
+              <h6>Select Task</h6>
+              <ng-select [items]="availableTasks" 
+                         bindLabel="label" 
+                         bindValue="value" 
+                         [multiple]="false"
+                         searchPlaceholder="Select Task"
+                         [(ngModel)]="selectedTask">
+              </ng-select>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <!-- Date-time picker and buttons at the bottom -->
+            <div class="col-md-6">
+              <h6>Select Start and End Time</h6>
+              <mat-form-field>
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [formGroup]="taskrange" [rangePicker]="picker">
+                  <input matStartDate formControlName="start" placeholder="Start date">
+                  <input matEndDate formControlName="end" placeholder="End date">
+                </mat-date-range-input>
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <button (click)="cancel()" class="custom-button btn-sm mr-2" style="margin-bottom: 8px;">Cancel</button>
+              <button (click)="submit()" class="custom-button btn-sm">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

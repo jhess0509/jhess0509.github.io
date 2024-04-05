@@ -15,6 +15,8 @@ import { MatMenu, MatMenuTrigger } from "@angular/material/menu";
 import { MatDialog } from "@angular/material/dialog";
 import { ActionNeededComponent } from "./action-needed/action-needed.component";
 import { GanttViewCustom } from "./custom-day-view";
+import { AddTaskComponent } from "./add-task/add-task.component";
+import { EditTaskComponent } from "./edit-task/edit-task.component";
 
 const customViewType = 'custom';
 
@@ -31,6 +33,7 @@ registerView(customViewType, GanttViewCustom);
 export class DashboardComponent implements AfterViewInit { 
 
   viewType = GanttViewType.day;
+  //viewType = customViewType;
 
   showWeekend = true;
 
@@ -40,6 +43,7 @@ statusFilters = [
   { value: 'actionNeeded', label: 'Action Needed'}
 ];
 
+listForemanFilters: any[] = [];
 foremanFilters: any[] = [
 
   { firstname: 'Donnell', lastname: 'Soler' },
@@ -118,12 +122,12 @@ statusFilterList: any[] = [];
 
 foremanFilter: string;
 
-
 items: GanttItem[] = [];
 originalItems: GanttItem[] = [];
 
 groups: GanttGroup[] = [];
 originalGroups: GanttGroup[] = [];
+selectedManager: any;
 
   baselineItems: GanttBaselineItem[] = [];
 
@@ -155,16 +159,26 @@ originalGroups: GanttGroup[] = [];
       };
     });
     //this.ds.createRandomProjects(10);
-    this.ds.getAllItems().subscribe((data) => {
-      console.log(data);
-      this.groups = data.groups;
-      this.items = data.items;
-      this.originalGroups = [...this.groups];
-      this.originalItems = [...this.items];
+    this.ds.getDict().subscribe((data) => {
+      this.nameDictionary = data;
+      this.ds.getAllItems().subscribe((data) => {
+        this.groups = data.groups;
+        this.items = data.items;
+        this.items.forEach(task => {
+          task.foreman = this.getManagerName(task.id);
+        });
+        
+        this.originalGroups = [...this.groups];
+        this.originalItems = [...this.items];
+      });
     });
     
   }
   contextMenuPosition = { x: '0px', y: '0px' };
+
+  updateManager(manager:any){
+
+  }
   
   onGanttContextMenu(event: MouseEvent): void {
     event.preventDefault();
@@ -242,14 +256,10 @@ originalGroups: GanttGroup[] = [];
 }
 
 barClick(event: GanttBarClickEvent) {
-    console.log(event);
-    console.log(this.menuTrigger);
     this.selectedItem = event.item;
 }
 filter() {
   this.items = this.originalItems;
-  console.log(this.items);
-  console.log(this.statusFilter);
   if(this.statusFilter == "onHold"){
     this.items = this.items.filter(item => item.color === '#FF0000');
   }
@@ -260,7 +270,6 @@ filter() {
     this.items = this.items.filter(item => item.color !== '#E1CA00' && item.color !== '#FF0000');
   }
   if(this.foremanFilter != null && this.foremanFilter != ''){
-    console.log(this.foremanFilter);
     this.items = this.items.filter(item => this.getManagerName(item.group_id) === this.foremanFilter);
   }
   this.items=[...this.items]; 
@@ -273,27 +282,14 @@ onFilterChangeStatus(event: any): void {
 activeButtonClick(): void {
     const foundItem = this.items.find(item => item.id === this.selectedItem.id);
     if (foundItem) {
-        console.log(foundItem);
         //if its on hold we need to do entire group else just the 1
-        if(foundItem.color = '#FF0000'){
-            this.items.forEach(item => {
-                if (item.group_id === foundItem.group_id) {
-                    item.color = null;
-                  if(item.actionText != null){
-                    item.title = item.title.replace(item.actionText, '');
-                    item.actionText = null;
-                  }
-                }
-            });
+        if(foundItem.actionText != null){
+          foundItem.title = foundItem.title.replace(foundItem.actionText, '');
+          foundItem.actionText = null;
         }
-        else{
-            if(foundItem.actionText != null){
-                foundItem.title = foundItem.title.replace(foundItem.actionText, '');
-                foundItem.actionText = null;
-            }
-            foundItem.color = null;
-        }
-        this.ds.convertToActive(parseInt(foundItem.group_id)).subscribe(
+        foundItem.color = null;
+
+        this.ds.convertToActive(parseInt(foundItem.id)).subscribe(
           (response) => {
             console.log('Project status updated successfully:', response);
           },
@@ -337,21 +333,48 @@ actionNeededButtonClick(): void {
       console.log('Item not found');
     }
 }
+editButtonClick(): void {
+  const foundItem = this.items.find(item => item.id === this.selectedItem.id);
+  if (foundItem) {
+      const dialogRef = this.dialog.open(EditTaskComponent, {
+          width: '1000px',
+          height: '300px',
+          data: { foundItem }
+          // Add any additional configuration options as needed
+        });
+    
+        dialogRef.afterClosed().subscribe((reason: any) => {
+          this.ds.getDict().subscribe((data) => {
+            this.nameDictionary = data;
+            this.ds.getAllItems().subscribe((data) => {
+              this.groups = data.groups;
+              this.items = data.items;
+              this.items.forEach(task => {
+                task.foreman = this.getManagerName(task.id);
+              });
+              
+              this.originalGroups = [...this.groups];
+              this.originalItems = [...this.items];
+            });
+          });
+        });
+    // Modify the color property of the found item
+    
+  } else {
+    console.log('Item not found');
+  }
+}
 onHoldButtonClick(): void {
     const foundItem = this.items.find(item => item.id === this.selectedItem.id);
-    console.log(foundItem);
-    this.items.forEach(item => {
-        if (item.group_id === foundItem.group_id) {
-            console.log("entered");
-            item.color = '#FF0000';
-          if(item.actionText != null){
-            item.title = item.title.replace(item.actionText, '');
-            item.actionText = null;
-          }
-          this.items=[...this.items];
-        }
-    });
-    this.ds.convertToOnHold(parseInt(foundItem.group_id)).subscribe(
+    if(foundItem){
+      foundItem.color = '#FF0000';
+      if(foundItem.actionText != null){
+        foundItem.title = foundItem.title.replace(foundItem.actionText, '');
+        foundItem.actionText = null;
+      }
+      this.items=[...this.items];
+    }
+    this.ds.convertToOnHold(parseInt(foundItem.id)).subscribe(
       (response) => {
         console.log('Project status updated successfully:', response);
       },
@@ -406,10 +429,13 @@ getRandomName(): string {
 getManagerName(item: any): string {
   if (!this.nameDictionary[item]) {
     // If the item is not in the dictionary, generate a random name and store it
-    this.nameDictionary[item] = this.getRandomName();
+    return ""
+  }
+  else{
+    return this.nameDictionary[item];
   }
 
-  return this.nameDictionary[item];
+
 }
 
 users: any[] = [
@@ -481,11 +507,19 @@ lineClick(event: GanttLineClickEvent) {
     //this.thyNotify.info('Event: lineClick', `你点击了 ${event.source.title} 到 ${event.target.title} 的关联线`);
 }
 
-dragMoved(event: GanttDragEvent) {}
+dragMoved(event: GanttDragEvent) {
+}
 
 dragEnded(event: GanttDragEvent) {
-    //this.thyNotify.info('Event: dragEnded', `修改了 [${event.item.title}] 的时间`);
-    this.items = [...this.items];
+    this.ds.updateTask(event.item);
+    this.ds.updateTask(event.item).subscribe(
+      (response) => {
+        console.log('Project status updated successfully:', response);
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
 }
 
 selectedChange(event: GanttSelectedEvent) {
@@ -524,6 +558,7 @@ switchChange() {
 
 
   onDragDropped(event: GanttTableDragDroppedEvent) {
+
       const sourceItems = event.sourceParent?.children || this.items;
       sourceItems.splice(sourceItems.indexOf(event.source), 1);
       if (event.dropPosition === 'inside') {
@@ -540,11 +575,34 @@ switchChange() {
   }
 
   onDragStarted(event: GanttTableDragStartedEvent) {
-      console.log('drag wstarted', event);
-  }
+      console.log('drag wstarted', event);  }
 
   onDragEnded(event: GanttTableDragEndedEvent) {
-      console.log('drag ended', event);
+
+  }
+
+  addTask() {
+    const dialogRef = this.dialog.open(AddTaskComponent, {
+      width: '1500px',
+      height: '300px'
+      // Add any additional configuration options as needed
+    });
+
+    dialogRef.afterClosed().subscribe((reason: any) => {
+      this.ds.getDict().subscribe((data) => {
+        this.nameDictionary = data;
+        this.ds.getAllItems().subscribe((data) => {
+          this.groups = data.groups;
+          this.items = data.items;
+          this.items.forEach(task => {
+            task.foreman = this.getManagerName(task.id);
+          });
+          
+          this.originalGroups = [...this.groups];
+          this.originalItems = [...this.items];
+        });
+      });
+    });
   }
 
   expandAllGroups() {

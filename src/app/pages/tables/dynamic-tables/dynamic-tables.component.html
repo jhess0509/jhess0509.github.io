@@ -11,12 +11,12 @@
                     <h6>Enter Project Name</h6>
                     <input [(ngModel)]="project.companyName" id="input-8" class='rounded-input form-control-lg'>
         
-                    <h6 class="mt-4">Select Project Manager</h6>
+                    <h6 class="mt-4">Select Foreman</h6>
                     <ng-select [items]="projectManagers"
                                bindLabel="label"
                                bindValue="value"
                                [multiple]="false"
-                               searchPlaceholder="Select Project Manager"
+                               searchPlaceholder="Select Foreman"
                                [(ngModel)]="selectedManager">
                     </ng-select>
                 </div>
@@ -51,7 +51,7 @@
                                bindLabel="label"
                                bindValue="value"
                                [multiple]="false"
-                               searchPlaceholder="Select Project Manager"
+                               searchPlaceholder="Select Foreman"
                                [(ngModel)]="selectedTask">
                     </ng-select>
                 </div>
@@ -142,82 +142,6 @@
         
         
     </div>
-
-    <div class="card col-md-12 mb-2">
-        <div class="card-header">
-            <span class="text-uppercase">Active Project List</span>
-        </div>
- 
-            <div class="card-body widget-body">    
-                <ngx-datatable
-                #taskTable
-                class="bootstrap"
-                [headerHeight]="50"
-                [limit]="10"
-                [columnMode]="'force'"
-                [footerHeight]="50"
-                [rowHeight]="'auto'"
-                [rows]="activeProjects"
-                [selected]="selected"
-                [selectionType]="selection"
-                (activate)="onActivate($event)"
-                (select)='onSelect($event)'>
-                    <ngx-datatable-column
-                        [width]="30"
-                        [sortable]="false"
-                        [canAutoResize]="false"
-                        [draggable]="true"
-                        [resizeable]="true"
-                        [headerCheckboxable]="false"
-                        [checkboxable]="false">
-                    </ngx-datatable-column>
-                    <ngx-datatable-column name="name">
-                        <ng-template ngx-datatable-header-template>
-                            <span>Project Name</span>
-                            </ng-template>
-                        <ng-template ngx-datatable-cell-template let-value="value">
-                            {{value}}
-                        </ng-template>
-                    </ngx-datatable-column>
-                    <ngx-datatable-column name="companyName">
-                        <ng-template ngx-datatable-header-template>
-                            <span>Project Manager</span>
-                            </ng-template>
-                        <ng-template ngx-datatable-cell-template let-value="value">
-                            {{value}}
-                        </ng-template>
-                    </ngx-datatable-column>
-                    <ngx-datatable-column name="start">
-                        <ng-template ngx-datatable-header-template>
-                        <span>Start Date</span>
-                        </ng-template>
-                        <ng-template ngx-datatable-cell-template let-value="value">
-                        {{ value | date: 'medium' }} <!-- or use a custom format -->
-                        </ng-template>
-                    </ngx-datatable-column>
-                 
-                    <ngx-datatable-column name="end">
-                        <ng-template ngx-datatable-header-template>
-                        <span>End Date</span>
-                        </ng-template>
-                        <ng-template ngx-datatable-cell-template let-value="value">
-                        {{ value | date: 'medium' }} <!-- or use a custom format -->
-                        </ng-template>
-                    </ngx-datatable-column>
-                    <ngx-datatable-column name="actions" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
-                        <ng-template ngx-datatable-header-template>
-                        <span>Actions</span>
-                        </ng-template>
-                        <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
-                        <button class="btn btn-danger btn-sm" (click)="deleteRowProject(row)">Delete</button>
-                        </ng-template>
-                    </ngx-datatable-column>
-                </ngx-datatable>  
-            </div>
-        </div>
-        
-        
-    
 
     <!-- Foreman/Superintendent List -->
     <div widget class="card col-md-6 mb-2" >
@@ -432,7 +356,7 @@
                                 <span>Start</span>
                                 </ng-template>
                                 <ng-template ngx-datatable-cell-template let-value="value">
-                                    {{ value | date: 'medium' }} <!-- or use a custom format -->
+                                    {{ value | date: 'mediumDate' }} <!-- or use a custom format -->
                                  </ng-template>
                         </ngx-datatable-column>
                         <ngx-datatable-column name="end">
@@ -440,7 +364,7 @@
                                 <span>End</span>
                                 </ng-template>
                                 <ng-template ngx-datatable-cell-template let-value="value">
-                                    {{ value | date: 'medium' }} <!-- or use a custom format -->
+                                    {{ value | date: 'mediumDate' }} <!-- or use a custom format -->
                                  </ng-template>
                         </ngx-datatable-column>
                         <ngx-datatable-column name="actions" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
@@ -456,4 +380,77 @@
             </div>
         </div>
     </div>
+
+    <div class="card col-md-12 mb-2">
+        <div class="card-header">
+            <span class="text-uppercase">Active Project List</span>
+        </div>
+ 
+            <div class="card-body widget-body">    
+                <ngx-datatable
+                #taskTable
+                class="bootstrap"
+                [headerHeight]="50"
+                [limit]="10"
+                [columnMode]="'force'"
+                [footerHeight]="50"
+                [rowHeight]="'auto'"
+                [rows]="activeProjects"
+                [selected]="selected"
+                [selectionType]="selection"
+                (activate)="onActivate($event)"
+                (select)='onSelect($event)'>
+                    <ngx-datatable-column
+                        [width]="30"
+                        [sortable]="false"
+                        [canAutoResize]="false"
+                        [draggable]="true"
+                        [resizeable]="true"
+                        [headerCheckboxable]="false"
+                        [checkboxable]="false">
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="name">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Project Name</span>
+                            </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="companyName">
+                        <ng-template ngx-datatable-header-template>
+                            <span>Foreman</span>
+                            </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                            {{value}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="start">
+                        <ng-template ngx-datatable-header-template>
+                        <span>Start Date</span>
+                        </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                        {{ value | date: 'medium' }} <!-- or use a custom format -->
+                        </ng-template>
+                    </ngx-datatable-column>
+                 
+                    <ngx-datatable-column name="end">
+                        <ng-template ngx-datatable-header-template>
+                        <span>End Date</span>
+                        </ng-template>
+                        <ng-template ngx-datatable-cell-template let-value="value">
+                        {{ value | date: 'medium' }} <!-- or use a custom format -->
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="actions" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                        <ng-template ngx-datatable-header-template>
+                        <span>Actions</span>
+                        </ng-template>
+                        <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                        <button class="btn btn-danger btn-sm" (click)="deleteRowProject(row)">Delete</button>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>  
+            </div>
+        </div>
 </div>
