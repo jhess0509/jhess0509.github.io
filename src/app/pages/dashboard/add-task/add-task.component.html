@@ -32,20 +32,22 @@
             <!-- Date-time picker and buttons at the bottom -->
             <div class="col-md-6">
               <h6>Select Start and End Time</h6>
-              <mat-form-field>
-                <mat-label>Enter a date range</mat-label>
-                <mat-date-range-input [formGroup]="taskrange" [rangePicker]="picker">
-                  <input matStartDate formControlName="start" placeholder="Start date">
-                  <input matEndDate formControlName="end" placeholder="End date">
-                </mat-date-range-input>
-                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              </mat-form-field>
+              <form [formGroup]="taskrange">
+                <mat-form-field>
+                  <mat-label>Enter a date range</mat-label>
+                  <mat-date-range-input [formGroup]="taskrange" [rangePicker]="picker">
+                    <input matStartDate formControlName="start" placeholder="Start date">
+                    <input matEndDate formControlName="end" placeholder="End date">
+                  </mat-date-range-input>
+                  <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+              </form>
             </div>
             <div class="col-md-6">
               <button (click)="cancel()" class="custom-button btn-sm mr-2" style="margin-bottom: 8px;">Cancel</button>
-              <button (click)="submit()" class="custom-button btn-sm">Submit</button>
+              <button (click)="submit()" [disabled]="!isFormValid" class="custom-button btn-sm">Submit</button>
             </div>
           </div>
         </div>

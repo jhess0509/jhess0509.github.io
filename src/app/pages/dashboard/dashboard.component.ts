@@ -44,69 +44,7 @@ statusFilters = [
 ];
 
 listForemanFilters: any[] = [];
-foremanFilters: any[] = [
-
-  { firstname: 'Donnell', lastname: 'Soler' },
-  { firstname: 'Norberto', lastname: 'Reyes Hernandez' },
-  { firstname: 'Flavio', lastname: 'Serrano Gonzalez' },
-  { firstname: 'Jose', lastname: 'Resendiz Soto' },
-  { firstname: 'Rendi', lastname: 'Venegas-Cruz' },
-  { firstname: 'Gerardo', lastname: 'Chavez Rojo' },
-  { firstname: 'Thomas', lastname: 'Arthur' },
-  { firstname: 'Francisco', lastname: 'Hernandez' },
-  { firstname: 'Richard', lastname: 'Lovely' },
-  { firstname: 'Chad', lastname: 'White' },
-  { firstname: 'Matt', lastname: 'Gesner' },
-  { firstname: 'Gary', lastname: 'Christie' },
-  { firstname: 'Shaun', lastname: 'Ware' },
-  { firstname: 'Stephen', lastname: 'Fowler' },
-  { firstname: 'Thomas', lastname: 'Burgess' },
-  { firstname: 'David', lastname: 'McDaniel' },
-  { firstname: 'Eric', lastname: 'Rodrigues' },
-  { firstname: 'Brett', lastname: 'Parsley' },
-  { firstname: 'Jonathan', lastname: 'Smith' },
-  { firstname: 'Adam', lastname: 'Hart' },
-  { firstname: 'Darren', lastname: 'McManus' },
-  { firstname: 'Mark', lastname: 'Collins' },
-  { firstname: 'Hager', lastname: 'McCune' },
-  { firstname: 'David', lastname: 'Harwell' },
-  { firstname: 'Keith', lastname: 'Breedlove' },
-  { firstname: 'William', lastname: 'Whitlow' },
-  { firstname: 'Jeffrey', lastname: 'Whittington' },
-  { firstname: 'Margarito', lastname: 'Mejia Romero' },
-  { firstname: 'Nectali', lastname: 'Bueso Canales' },
-  { firstname: 'Henry', lastname: 'Brown' },
-  { firstname: 'Brian', lastname: 'Lemon' },
-  { firstname: 'Jason', lastname: 'Prince' },
-  { firstname: 'Sergio', lastname: 'Almanza Navarro' },
-  { firstname: 'Tyler', lastname: 'Birdsong' },
-  { firstname: 'Carlos', lastname: 'Sanchez Farfan' },
-  { firstname: 'Christopher', lastname: 'Chalk' },
-  { firstname: 'Oscar', lastname: 'Martinez Tobar' },
-  { firstname: 'Christopher', lastname: 'Perry' },
-  { firstname: 'Marco', lastname: 'Avila Pena' },
-  { firstname: 'Brandon', lastname: 'Ledford' },
-  { firstname: 'Kary', lastname: 'Combs' },
-  { firstname: 'Joshua', lastname: 'Coley' },
-  { firstname: 'Daniel', lastname: 'Outwater' },
-  { firstname: 'Mark', lastname: 'Collins' },
-  { firstname: 'Gregory', lastname: 'Leatherman' },
-  { firstname: 'Jeffrey', lastname: 'Turman' },
-  { firstname: 'Benjamin', lastname: 'Hubbard' },
-  { firstname: 'Michael', lastname: 'Romeo' },
-  { firstname: 'Cory', lastname: 'Blackwell' },
-  { firstname: 'Scott', lastname: 'Barbee' },
-  { firstname: 'Richard', lastname: 'Birdsong' },
-  { firstname: 'Lindsay', lastname: 'Austin' },
-  { firstname: 'Rhett', lastname: 'Cox' },
-  { firstname: 'Brandon', lastname: 'Ervin' },
-  { firstname: 'Austin', lastname: 'Locklear' },
-  { firstname: 'David', lastname: 'Mangiamele' },
-  { firstname: 'Donnie', lastname: 'Doster' },
-  { firstname: 'Drew', lastname: 'Barnett' },
-  { firstname: 'Jeff', lastname: 'Crump' }
-  
-]; 
+foremanFilters: any[] = [];
 
 
 isBaselineChecked = false;
@@ -152,12 +90,17 @@ selectedManager: any;
   }
 
   ngOnInit(): void {
-    this.foremanFilters = this.foremanFilters.map(item => {
-      return {
-        label: `${item.firstname} ${item.lastname}`,
-        value: `${item.firstname} ${item.lastname}`
-      };
+    this.ds.getForemans().subscribe((data) => {
+      console.log(data);
+      this.foremanFilters = data;
+      this.foremanFilters = this.foremanFilters.map(item => {
+        return {
+          label: `${item.firstname} ${item.lastname}`,
+          value: `${item.firstname} ${item.lastname}`
+        };
+      });
     });
+    
     //this.ds.createRandomProjects(10);
     this.ds.getDict().subscribe((data) => {
       this.nameDictionary = data;
@@ -270,7 +213,8 @@ filter() {
     this.items = this.items.filter(item => item.color !== '#E1CA00' && item.color !== '#FF0000');
   }
   if(this.foremanFilter != null && this.foremanFilter != ''){
-    this.items = this.items.filter(item => this.getManagerName(item.group_id) === this.foremanFilter);
+    console.log(this.items);
+    this.items = this.items.filter(item => this.getManagerName(item.id) === this.foremanFilter);
   }
   this.items=[...this.items]; 
 }
@@ -404,6 +348,30 @@ completedButtonClick(): void {
   }
     
 }
+deletedButtonClick(): void { 
+  if(confirm("Are you sure to delete the Task?")) {
+    
+    const foundItem = this.items.find(item => item.id === this.selectedItem.id);
+    this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
+      (response) => {
+        this.ds.getAllItems().subscribe((data) => {
+          this.groups = data.groups;
+          this.items = data.items;
+          this.items.forEach(task => {
+            task.foreman = this.getManagerName(task.id);
+          });
+          
+          this.originalGroups = [...this.groups];
+          this.originalItems = [...this.items];
+        });
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
+  }
+    
+}
 ngOnDestroy(): void {
     console.log('Component destroyed');
   }
@@ -511,7 +479,8 @@ dragMoved(event: GanttDragEvent) {
 }
 
 dragEnded(event: GanttDragEvent) {
-    this.ds.updateTask(event.item);
+    //this.ds.updateTask(event.item);
+    console.log(event.item);
     this.ds.updateTask(event.item).subscribe(
       (response) => {
         console.log('Project status updated successfully:', response);

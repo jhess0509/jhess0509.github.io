@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/logic/models/user-model/user-model.component';
 import { UsersService } from 'src/app/logic/services/users.service';
+import { DataService } from 'src/app/pages/dashboard/data.service';
 
 @Component({
   selector: 'az-create-user',
@@ -26,14 +27,24 @@ export class CreateUserComponent {
 
   expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   
-  constructor(public dialogRef: MatDialogRef<CreateUserComponent>, private usersService: UsersService, private toastr: ToastrService) {}
+  constructor(public dialogRef: MatDialogRef<CreateUserComponent>, private ds: DataService, private usersService: UsersService, private toastr: ToastrService) {}
   
   ngOnInit() {
   }
 
   submit(){
     this.usersService.createUser(this.createUser);
-    this.dialogRef.close();
+
+    try{
+      this.subs.add(this.ds.createForeman(this.createUser)
+        .subscribe((res:any) => {
+          this.dialogRef.close({  });
+        }));
+    }
+    catch{
+      this.dialogRef.close();
+    }
+
   }
   cancel(){
     this.dialogRef.close();

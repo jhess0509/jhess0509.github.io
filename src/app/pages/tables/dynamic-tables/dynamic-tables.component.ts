@@ -94,13 +94,16 @@ export class DynamicTablesComponent {
   }
 
   loadUsers() {
-    this.rows = this.usersService.getUsers();
-    this.projectManagers = this.usersService.getUsers().map(user => {
-      return {
-        label: `${user.firstname} ${user.lastname}`,
-        value: `${user.firstname} ${user.lastname}`,
-        // You can include other properties if needed
-      };
+    this.dataService.getForemans().subscribe((data) => {
+      console.log(data);
+      this.projectManagers = data;
+      this.rows = data;
+      this.projectManagers = this.projectManagers.map(item => {
+        return {
+          label: `${item.firstname} ${item.lastname}`,
+          value: `${item.firstname} ${item.lastname}`
+        };
+      });
     });
     this.availableTasks = this.usersService.getProjectTasks().map(user => {
       return {
@@ -213,6 +216,16 @@ export class DynamicTablesComponent {
   }
   deleteRowManager(row: any) {
     this.rows = this.rows.filter(item => item !== row);
+    console.log("row");
+    console.log(row);
+    this.dataService.deleteForeman(row.id).subscribe(
+      (response) => {
+        console.log('Project status updated successfully:', response);
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
   }
   deleteRowTask(row: any) {
     this.projectRows = this.usersService.deleteProjectTask(row);

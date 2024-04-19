@@ -127,6 +127,10 @@ export class DataService {
     const URL = `${this.route}getDict`;
     return this.http.get<any>(URL);
   }
+  getForemans(): Observable<any> {
+    const URL = `${this.apiBaseUrl}foremen`;
+    return this.http.get<any>(URL);
+  }
   addProject(project:any): void{
     this.activeProjects.push(project);
   }
@@ -172,19 +176,26 @@ export class DataService {
 
   createProjectApi(project: any): Observable<null>{
     const URL = `${this.route}createProject`;
-    console.log(URL);
     return this.http.post<null>(URL, project);
   }
 
   createTask(task: any): Observable<null> {
     const URL = `${this.route}createTask`;
-    console.log(URL);
     return this.http.post<null>(URL, task);
   }
 
+  createForeman(foreman: any): Observable<null> {
+    const URL = `${this.apiBaseUrl}/foremen`;
+    return this.http.post<null>(URL, foreman);
+  }
+
+  deleteForeman(foremanId: number): Observable<null> {
+    const URL = `${this.apiBaseUrl}/foremen/${foremanId}`;
+    return this.http.delete<null>(URL);
+}
+
   addHoliday(holiday: any): Observable<null> {
     const URL = `${this.route}createHoliday`;
-    console.log(URL);
     return this.http.post<null>(URL, holiday);
   }
 
@@ -242,6 +253,10 @@ export class DataService {
   }
   convertToComplete(projectId: number){
     const URL = `${this.route}convert_complete/`;
+    return this.http.put<any>(URL + projectId, {});
+  }
+  convertToDeleted(projectId: number){
+    const URL = `${this.route}delete/`;
     return this.http.put<any>(URL + projectId, {});
   }
   convertToActionNeeded(projectId: number, text: string){

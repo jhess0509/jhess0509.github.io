@@ -92,11 +92,15 @@ export class EditTaskComponent {
       start: new FormControl<Date | null>(startDate), // Set initial value for start control
       end: new FormControl<Date | null>(endDate), // Set initial value for end control
     });
-    this.foremanFilters = this.foremanFilters.map(item => {
-      return {
-        label: `${item.firstname} ${item.lastname}`,
-        value: `${item.firstname} ${item.lastname}`
-      };
+    this.ds.getForemans().subscribe((data) => {
+      console.log(data);
+      this.foremanFilters = data;
+      this.foremanFilters = this.foremanFilters.map(item => {
+        return {
+          label: `${item.firstname} ${item.lastname}`,
+          value: `${item.firstname} ${item.lastname}`
+        };
+      });
     });
     this.id = data.foundItem.id
 

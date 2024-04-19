@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UsersService } from 'src/app/logic/services/users.service';
 import { DataService } from '../data.service';
@@ -15,10 +15,8 @@ export class AddTaskComponent {
   availableTasks: any[] = [];
   subs = new Subscription();
 
-  taskrange = new FormGroup({
-    start: new FormControl<Date | null>(null),
-    end: new FormControl<Date | null>(null),
-  });
+  taskrange: FormGroup;
+  isFormValid: boolean = false;
 
   items: GanttItem[] = [];
   groups: GanttGroup[] = [];
@@ -26,7 +24,7 @@ export class AddTaskComponent {
   selectedTask: any = {};
   
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-  public dialogRef: MatDialogRef<AddTaskComponent>, private usersService: UsersService, private ds: DataService) {
+  public dialogRef: MatDialogRef<AddTaskComponent>, private usersService: UsersService, private ds: DataService, private formBuilder: FormBuilder) {
     this.availableTasks = this.usersService.getProjectTasks().map(user => {
       return {
         label: `${user.task}`,
@@ -40,6 +38,18 @@ export class AddTaskComponent {
       this.items = data.items;
     });
 
+  }
+
+  ngOnInit(): void {
+    this.taskrange = this.formBuilder.group({
+      start: ['', Validators.required],
+      end: ['', Validators.required]
+    });
+
+    // Subscribe to valueChanges of the form to update isFormValid
+    this.taskrange.valueChanges.subscribe(() => {
+      this.isFormValid = this.taskrange.valid;
+    });
   }
 
 
