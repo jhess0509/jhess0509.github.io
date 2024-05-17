@@ -211,8 +211,16 @@ export class DynamicTablesComponent {
     this.selectedTasks = this.selectedTasks.filter(item => item !== row);
   }
   deleteRowProject(row: any) {
-    this.activeProjects = this.activeProjects.filter(item => item !== row);
-    this.dataService.deleteRow(row);
+    this.dataService.deleteActiveProject(row.id).subscribe(
+      (response) => {
+        this.activeProjects = this.activeProjects.filter(item => item !== row);
+        this.dataService.deleteRow(row);
+        console.log('Project status updated successfully:', response);
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
   }
   deleteRowManager(row: any) {
     this.rows = this.rows.filter(item => item !== row);

@@ -58,18 +58,20 @@
     <!-- Add your Gantt chart configuration here -->
     <ngx-gantt-table>
       <ngx-gantt-column name="Active Projects" width="180px">
-        <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
+        <ng-template #header let-item="item"> <strong> Active Projects </strong> </ng-template>
+        <ng-template #cell let-item="item"> <strong>{{ item.title }}</strong> </ng-template>
       </ngx-gantt-column>
       <ngx-gantt-column name="Foremen" width="180px">
+        <ng-template #header let-item="item"> <strong> Foreman </strong> </ng-template>
         <ng-template #cell let-item="item">
-          {{ getManagerName(item.id) }} 
+          <strong> {{ getManagerName(item.id) }} </strong>
         </ng-template>
       </ngx-gantt-column>
     </ngx-gantt-table>
 
     <!-- group template -->
     <ng-template #group let-group="group" let-items="items">
-      <span class="text-primary">{{ group.title }}</span>
+      <span class="text-primary"> <strong> {{ group.title }} </strong></span>
     </ng-template>
     <ng-template #bar let-item="item">
       <span [cdkMenuTriggerFor]="menu" style="color: #fff">&nbsp;&nbsp;{{ item.title }}</span>

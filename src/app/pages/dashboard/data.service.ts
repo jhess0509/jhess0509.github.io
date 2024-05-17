@@ -192,7 +192,12 @@ export class DataService {
   deleteForeman(foremanId: number): Observable<null> {
     const URL = `${this.apiBaseUrl}/foremen/${foremanId}`;
     return this.http.delete<null>(URL);
-}
+  }
+
+  deleteActiveProject(projectId: number): Observable<null> {
+    const URL = `${this.apiBaseUrl}/data/${projectId}`;
+    return this.http.delete<null>(URL);
+  }
 
   addHoliday(holiday: any): Observable<null> {
     const URL = `${this.route}createHoliday`;
