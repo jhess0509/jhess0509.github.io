@@ -32,7 +32,7 @@ export class DynamicTablesComponent {
   project: any = {};
   projectManagers: any[] = [];
   availableTasks: any[] = [];
-  selectedManager: any = {};
+  selectedManager: string;
   selectedTask: any = {};
   selectedTasks: any[] = [];
   selectedHoliday: string = "";
@@ -63,6 +63,13 @@ export class DynamicTablesComponent {
   }
 
   constructor(private usersService: UsersService, private dataService: DataService, public dialog: MatDialog, private cdr: ChangeDetectorRef) { 
+  }
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+  ngAfterViewInit() {
+    console.log("entered");
     const selectedManager = localStorage.getItem('selectedManager');
     if (selectedManager) {
       this.selectedManager = selectedManager;
@@ -87,10 +94,6 @@ export class DynamicTablesComponent {
     if (selectedTasks) {
       this.project = JSON.parse(project);
     }
-  }
-
-  ngOnInit() {
-    this.loadUsers();
   }
 
   loadUsers() {
@@ -156,6 +159,12 @@ export class DynamicTablesComponent {
     row.isEditing = false;
   }
   submitProject(){
+    if (!this.selectedManager) {
+      alert('Please select a foreman before submitting the project.');
+      return;
+    }
+    console.log(this.selectedManager);
+
     let project = {
       name: this.project.companyName,
       companyName: this.selectedManager,
@@ -180,7 +189,7 @@ export class DynamicTablesComponent {
     //this.dataService.createProject(project);
     
     
-    this.selectedManager = [];
+    this.selectedManager = null;
     this.range.reset();
     this.taskrange.reset();
     this.selectedTask = [];
@@ -281,7 +290,16 @@ export class DynamicTablesComponent {
     if (this.subs) {
       this.subs.unsubscribe();
     }
-    localStorage.setItem('selectedManager', this.selectedManager);
+    
+    if(this.selectedManager){
+      console.log(this.selectedManager);
+      localStorage.setItem('selectedManager', this.selectedManager);
+    }
+    else{
+      localStorage.removeItem('selectedManager');
+    }
+
+    
     localStorage.setItem('range', JSON.stringify(this.range.value));
     localStorage.setItem('taskrange', JSON.stringify(this.taskrange.value));
     localStorage.setItem('selectedTask', this.selectedTask);
