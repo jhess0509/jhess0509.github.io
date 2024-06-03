@@ -108,13 +108,6 @@ export class DynamicTablesComponent {
         };
       });
     });
-    this.availableTasks = this.usersService.getProjectTasks().map(user => {
-      return {
-        label: `${user.task}`,
-        value: `${user.task}`,
-        // You can include other properties if needed
-      };
-    });
     try{
       this.subs.add(this.dataService.getActiveProjects()
         .subscribe((res:any) => {
@@ -133,7 +126,23 @@ export class DynamicTablesComponent {
     }
     catch{
     }
-    this.projectRows = this.usersService.getProjectTasks();
+    try{
+      this.subs.add(this.dataService.getTaskList()
+        .subscribe((res:any) => {
+          this.projectRows = res;
+          this.availableTasks = res.map(user => {
+            return {
+              label: `${user.task}`,
+              value: `${user.task}`,
+              // You can include other properties if needed
+            };
+          });
+          this.availableTasks = [...this.availableTasks];
+          this.projectRows = [...this.projectRows];
+        }));
+    }
+    catch{
+    }
     this.rows = [...this.rows];
     this.projectRows = [...this.projectRows];
     this.activeProjects = [...this.activeProjects];
@@ -160,7 +169,11 @@ export class DynamicTablesComponent {
   }
   submitProject(){
     if (!this.selectedManager) {
-      alert('Please select a foreman before submitting the project.');
+      alert('Please select a Foreman before submitting the project.');
+      return;
+    }
+    if(!this.project.companyName || this.project.companyName == ""){
+      alert('Please select a Project Name before submitting the project.');
       return;
     }
     console.log(this.selectedManager);
@@ -220,21 +233,20 @@ export class DynamicTablesComponent {
     this.selectedTasks = this.selectedTasks.filter(item => item !== row);
   }
   deleteRowProject(row: any) {
-    this.dataService.deleteActiveProject(row.id).subscribe(
-      (response) => {
-        this.activeProjects = this.activeProjects.filter(item => item !== row);
-        this.dataService.deleteRow(row);
-        console.log('Project status updated successfully:', response);
-      },
-      (error) => {
-        console.error('Error updating project status:', error);
-      }
-    );
+    if(confirm("Are you sure to Delete the Project?")) {
+      this.dataService.deleteActiveProject(row.id).subscribe(
+        (response) => {
+          this.projectRows = this.projectRows.filter(item => item !== row);
+          console.log('Project status updated successfully:', response);
+        },
+        (error) => {
+          console.error('Error updating project status:', error);
+        }
+      );
+    }
   }
   deleteRowManager(row: any) {
     this.rows = this.rows.filter(item => item !== row);
-    console.log("row");
-    console.log(row);
     this.dataService.deleteForeman(row.id).subscribe(
       (response) => {
         console.log('Project status updated successfully:', response);
@@ -245,7 +257,17 @@ export class DynamicTablesComponent {
     );
   }
   deleteRowTask(row: any) {
-    this.projectRows = this.usersService.deleteProjectTask(row);
+    this.dataService.deleteTasklist(row.id).subscribe(
+      (response) => {
+        this.projectRows = this.projectRows.filter(item => item.id !== row.id);
+        this.projectRows = [...this.projectRows];
+        this.dataService.deleteRow(row);
+        console.log('Project status updated successfully:', response);
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
   }
 
   addItem(): void {

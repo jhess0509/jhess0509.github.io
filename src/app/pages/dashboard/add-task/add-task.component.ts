@@ -25,13 +25,17 @@ export class AddTaskComponent {
   
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
   public dialogRef: MatDialogRef<AddTaskComponent>, private usersService: UsersService, private ds: DataService, private formBuilder: FormBuilder) {
-    this.availableTasks = this.usersService.getProjectTasks().map(user => {
-      return {
-        label: `${user.task}`,
-        value: `${user.task}`,
-        // You can include other properties if needed
-      };
-    });
+    this.subs.add(this.ds.getTaskList()
+        .subscribe((res:any) => {
+          this.availableTasks = res.map(user => {
+            return {
+              label: `${user.task}`,
+              value: `${user.task}`,
+              // You can include other properties if needed
+            };
+          });
+          this.availableTasks = [...this.availableTasks];
+        }));
     this.ds.getAllItems().subscribe((data) => {
       console.log(data);
       this.groups = data.groups;

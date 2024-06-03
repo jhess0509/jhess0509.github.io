@@ -157,23 +157,20 @@ export class UsersService {
    getProjectTypes(): string[] {
     return this.projectTypes;
    }
-  getProjectTasks(): any[] {
-    return this.projectTasks;
-   }
+
   getRoles(): Observable<string[]> {
     const URL = `${this.route}getRoles`;
     return this.http.get<string[]>(URL);
   }
+
+  addTaskList(taskList: any): Observable<null> {
+    const URL = `${this.apiBaseUrl}data/createTaskList`;
+    return this.http.post<null>(URL, taskList);
+  }
+
   createUser(user: User): null{
     this.users.push(user);
     return null;
   }
-  deleteProjectTask(row: any): any[]{
-    this.projectTasks = this.projectTasks.filter(item => item !== row);
-    return this.projectTasks;
-  }
-  createProjectTask(type: string, task: string): null{
-    this.projectTasks.push({type: type, task: task});
-    return null;
-  }
+
 }
