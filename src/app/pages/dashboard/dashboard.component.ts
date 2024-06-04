@@ -17,6 +17,8 @@ import { ActionNeededComponent } from "./action-needed/action-needed.component";
 import { GanttViewCustom } from "./custom-day-view";
 import { AddTaskComponent } from "./add-task/add-task.component";
 import { EditTaskComponent } from "./edit-task/edit-task.component";
+import { format, parse } from "date-fns";
+import { start } from "repl";
 
 const customViewType = 'custom';
 
@@ -91,7 +93,6 @@ selectedManager: any;
 
   ngOnInit(): void {
     this.ds.getForemans().subscribe((data) => {
-      console.log(data);
       this.foremanFilters = data;
       this.foremanFilters = this.foremanFilters.map(item => {
         return {
@@ -105,11 +106,23 @@ selectedManager: any;
     this.ds.getDict().subscribe((data) => {
       this.nameDictionary = data;
       this.ds.getAllItems().subscribe((data) => {
+        const parsedItems = data.items.map(item => ({
+          ...item,
+          start: this.parseDateWithoutGMT(item.start),
+          end: this.parseDateWithoutGMT(item.end)
+        }));
+        const formattedItems = parsedItems.map(item => ({
+          ...item,
+          start: format(item.start, "dd MMM yyyy HH:mm:ss"),
+          end: format(item.end, "dd MMM yyyy HH:mm:ss")
+        }));
+        data.items.sort((a, b) => b.start - a.start);
         this.groups = data.groups;
-        this.items = data.items;
+        this.items = formattedItems;
         this.items.forEach(task => {
           task.foreman = this.getManagerName(task.id);
         });
+        
         
         this.originalGroups = [...this.groups];
         this.originalItems = [...this.items];
@@ -118,6 +131,22 @@ selectedManager: any;
     
   }
   contextMenuPosition = { x: '0px', y: '0px' };
+
+  parseDateWithoutGMT(dateString: string): Date {
+    // Remove "GMT" part from the date string
+    const dateStringWithoutGMT = dateString.replace(' GMT', '');
+  
+    // Parse the date string into a Date object
+    return new Date(dateStringWithoutGMT);
+  }
+
+  parseDateWithoutAdjustment(dateString: string): Date {
+    const parts = dateString.split(' ');
+    const [day, month, year] = parts[1].split('-');
+    const [hour, minute, second] = parts[4].split(':');
+  
+    return new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute), parseInt(second)));
+  }
 
   updateManager(manager:any){
 
@@ -480,8 +509,13 @@ dragMoved(event: GanttDragEvent) {
 
 dragEnded(event: GanttDragEvent) {
     //this.ds.updateTask(event.item);
-    console.log(event.item);
-    this.ds.updateTask(event.item).subscribe(
+    const adjustedItem = {
+      ...event.item,
+      start: event.item.start - 14400, // Subtract 4 hours (14400 seconds) from start epoch
+      end: event.item.end - 14400 // Subtract 4 hours (14400 seconds) from end epoch
+    };
+
+    this.ds.updateTask(adjustedItem).subscribe(
       (response) => {
         console.log('Project status updated successfully:', response);
       },

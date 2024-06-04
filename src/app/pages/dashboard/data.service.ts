@@ -123,6 +123,10 @@ export class DataService {
     const URL = `${this.route}holidays`;
     return this.http.get<any>(URL);
   }
+  getTaskList(): Observable<any[]> {
+    const URL = `${this.route}getTaskList`;
+    return this.http.get<any>(URL);
+  }
   getDict(): Observable<any> {
     const URL = `${this.route}getDict`;
     return this.http.get<any>(URL);
@@ -191,6 +195,11 @@ export class DataService {
 
   deleteForeman(foremanId: number): Observable<null> {
     const URL = `${this.apiBaseUrl}/foremen/${foremanId}`;
+    return this.http.delete<null>(URL);
+  }
+
+  deleteTasklist(taskListId: number): Observable<null> {
+    const URL = `${this.apiBaseUrl}data/taskList/${taskListId}`;
     return this.http.delete<null>(URL);
   }
 

@@ -77,7 +77,7 @@ export const routes: Routes = [
           year: 'yyyy',
           yearMonth: 'MMM yyyy',
           yearQuarter: 'yyyy QQQ'
-        }
+        },
       }
     }, DashboardService , ],
   declarations: [

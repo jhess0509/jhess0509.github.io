@@ -33,7 +33,6 @@ export class EditTableComponent implements OnInit{
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
                       public dialogRef: MatDialogRef<EditTableComponent>,
                       private toastr: ToastrService,
-                      private orderService: OrderServiceService,
                       private datePipe: DatePipe,
                       private cdr: ChangeDetectorRef,
                       private userService: UsersService ) {
@@ -41,52 +40,30 @@ export class EditTableComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.projectTypes = this.userService.getProjectTypes()
   }
    
 
   submit(){
-    this.userService.createProjectTask(this.selectedType, this.selectedTask)
-    this.dialogRef.close({ result: true });
+    let TaskList = {
+      task: this.selectedTask,
+      type: this.selectedType
+    };
+    this.userService.addTaskList(TaskList).subscribe(
+      (response) => {
+        console.log('Project status updated successfully:', response);
+        this.dialogRef.close({ result: true });
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
+
   }
 
   cancel(){
     this.dialogRef.close({ result: false });
   }
 
-  onTimeSelected(event: any): void {
-    console.log(event);
-  }
-
-  getDateWithoutTime(originalDate: string): Date {
-    const parts = originalDate.split('-');
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Subtract 1 to account for 0-based indexing
-    const day = parseInt(parts[2]);
-
-    const dateObject = new Date(year, month, day, 0, 0, 0); // Set hours, minutes, and seconds to 0
-
-    return new Date(
-      dateObject.getFullYear(),
-      dateObject.getMonth(),
-      dateObject.getDate(),
-      0,
-      0,
-      0
-    );
-  }
-  getTimeWithouDate(originalDate: any): Date {
-    let tempDate = new Date(originalDate);
-    
-    return new Date(
-      0,
-      0,
-      0,
-      tempDate.getHours(),
-      tempDate.getMinutes(),
-      tempDate.getSeconds(),
-    );
-  }
   ngOnDestroy() {
     if (this.subs) {
       this.subs.unsubscribe();
