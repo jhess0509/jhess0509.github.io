@@ -8,7 +8,13 @@
     <button class="example-menu-item" cdkMenuItem (click)="editButtonClick()">Edit Task</button>
   </div>
 </ng-template>
-<div class="container" style="height: 100vh; width: 100vw;" (contextmenu)="onContextMenu($event)" *ngIf="showComponent">
+<ng-template #columnMenu let-item="item">
+  <div class="example-menu" cdkMenu>
+    <button class="example-menu-item" cdkMenuItem (click)="deletedMenuButtonClick(item)">Delete</button>
+  </div>
+</ng-template>
+
+<div class="container-fluid" style="height: 100vh; width: 100vw;" (contextmenu)="onContextMenu($event)" *ngIf="showComponent">
   <div class="row">
     <div class="col-md-4 col-12">
       <h6>Project Filter</h6>
@@ -36,45 +42,59 @@
       <button (click)="expandAllGroups()" class="align-self-center mr-1">
         {{ expanded ? 'Collapse' : 'Expand' }}
       </button>
-      <button (click)="addTask()" class="align-self-center">
+      <button (click)="addTask()" class="align-self-center mr-1">
         {{ 'Add Task' }}
       </button>
+      <button (click)="generatePDF()" class="align-self-center">Download as PDF</button>
     </div>
+    
   </div>
 
-  <ngx-gantt
-    #gantt
-    [groups]="groups"
-    [items]="items"
-    [viewType]="viewType"
-    [draggable]="true"
-    [async]="true"
-    [childrenResolve]="childrenResolve"
-    [viewOptions]="viewOptions"
-    (contextmenu)="onGanttContextMenu($event)"
-    (barClick)="barClick($event)"
-    (dragEnded)="dragEnded($event)"
-  >
-    <!-- Add your Gantt chart configuration here -->
-    <ngx-gantt-table>
-      <ngx-gantt-column name="Active Projects" width="180px">
-        <ng-template #header let-item="item"> <strong> Active Projects </strong> </ng-template>
-        <ng-template #cell let-item="item"> <strong>{{ item.title }}</strong> </ng-template>
-      </ngx-gantt-column>
-      <ngx-gantt-column name="Foremen" width="180px">
-        <ng-template #header let-item="item"> <strong> Foreman </strong> </ng-template>
-        <ng-template #cell let-item="item">
-          <strong> {{ getManagerName(item.id) }} </strong>
-        </ng-template>
-      </ngx-gantt-column>
-    </ngx-gantt-table>
+  <div id="gantt-container" class="row mt-3" style="height: calc(100vh - 150px);"> <!-- Adjust the height to fit your layout -->
+    <div class="col-12" style="overflow: auto;">
+      <ngx-gantt
+        #gantt
+        [groups]="groups"
+        [items]="items"
+        [viewType]="viewType"
+        [draggable]="true"
+        [async]="true"
+        [childrenResolve]="childrenResolve"
+        [viewOptions]="viewOptions"
+        (contextmenu)="onGanttContextMenu($event)"
+        (barClick)="barClick($event)"
+        (dragEnded)="dragEnded($event)"
+        style="width: 100%; height: 100%;"> <!-- Ensure full height -->
 
-    <!-- group template -->
-    <ng-template #group let-group="group" let-items="items">
-      <span class="text-primary"> <strong> {{ group.title }} </strong></span>
-    </ng-template>
-    <ng-template #bar let-item="item">
-      <span [cdkMenuTriggerFor]="menu" style="color: #fff">&nbsp;&nbsp;{{ item.title }}</span>
-    </ng-template>
-  </ngx-gantt>
+        <!-- Add your Gantt chart configuration here -->
+        <ngx-gantt-table>
+          <ngx-gantt-column name="Active Projects" width="180px">
+            <ng-template #header let-item="item"> <strong> Active Projects </strong> </ng-template>
+            <ng-template #cell let-item="item">
+              <span [cdkMenuTriggerFor]="columnMenu" [cdkMenuTriggerData]="{ item: item }" style="cursor: pointer;">
+                <strong>{{ item.title }}</strong>
+              </span>
+            </ng-template>
+          </ngx-gantt-column>
+          <ngx-gantt-column name="Foremen" width="180px">
+            <ng-template #header let-item="item"> <strong> Foreman </strong> </ng-template>
+            <ng-template #cell let-item="item">
+              <span [cdkMenuTriggerFor]="columnMenu" [cdkMenuTriggerData]="{ item: item }" style="cursor: pointer;">
+                <strong>{{ getManagerName(item.id) }}</strong>
+              </span>
+            </ng-template>
+          </ngx-gantt-column>
+        </ngx-gantt-table>
+
+        <!-- group template -->
+        <ng-template #group let-group="group" let-items="items">
+          <span class="text-primary"> <strong> {{ group.title }} </strong></span>
+        </ng-template>
+        <ng-template #bar let-item="item">
+          <span [cdkMenuTriggerFor]="menu" style="color: #fff">&nbsp;&nbsp;{{ item.title }}</span>
+        </ng-template>
+        
+      </ngx-gantt>
+    </div>
+  </div>
 </div>

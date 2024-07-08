@@ -19,6 +19,8 @@ import { AddTaskComponent } from "./add-task/add-task.component";
 import { EditTaskComponent } from "./edit-task/edit-task.component";
 import { format, parse } from "date-fns";
 import { start } from "repl";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const customViewType = 'custom';
 
@@ -138,6 +140,33 @@ selectedManager: any;
   
     // Parse the date string into a Date object
     return new Date(dateStringWithoutGMT);
+  }
+
+  generatePDF() {
+    const ganttElement = document.getElementById('gantt-container');
+    if (ganttElement) {
+      html2canvas(ganttElement).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('landscape');
+        const imgWidth = 297;
+        const pageHeight = 210;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        pdf.save('gantt.pdf');
+      });
+    }
   }
 
   parseDateWithoutAdjustment(dateString: string): Date {
@@ -379,8 +408,30 @@ completedButtonClick(): void {
 }
 deletedButtonClick(): void { 
   if(confirm("Are you sure to delete the Task?")) {
-    
     const foundItem = this.items.find(item => item.id === this.selectedItem.id);
+    this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
+      (response) => {
+        this.ds.getAllItems().subscribe((data) => {
+          this.groups = data.groups;
+          this.items = data.items;
+          this.items.forEach(task => {
+            task.foreman = this.getManagerName(task.id);
+          });
+          
+          this.originalGroups = [...this.groups];
+          this.originalItems = [...this.items];
+        });
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
+  }
+    
+}
+deletedMenuButtonClick(item): void { 
+  if(confirm("Are you sure to delete the Task?")) {
+    const foundItem = this.items.find(itm => itm.id === item.id);
     this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
       (response) => {
         this.ds.getAllItems().subscribe((data) => {
