@@ -145,30 +145,50 @@ selectedManager: any;
   generatePDF() {
     const ganttElement = document.getElementById('gantt-container');
     if (ganttElement) {
-      html2canvas(ganttElement).then(canvas => {
+      // Ensure required styles for rendering are applied
+      ganttElement.style.overflow = 'auto';
+      ganttElement.style.height = 'calc(100vh - 150px)'; // Maintain height for rendering
+  
+      // Use html2canvas to capture the full content of the Gantt chart
+      html2canvas(ganttElement, {
+        scale: 2, // Higher scale for better resolution
+        useCORS: true
+      }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+  
+        // Create a new jsPDF instance
         const pdf = new jsPDF('landscape');
-        const imgWidth = 297;
-        const pageHeight = 210;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
+        
+        // Set PDF dimensions (A4 size in mm)
+        const pdfWidth = 297; // A4 width in mm
+        const pdfHeight = 210; // A4 height in mm
+  
+        // Calculate dimensions to fit the image within the PDF page
+        const widthRatio = pdfWidth / (imgWidth * 0.75); // Adjust scale if necessary
+        const heightRatio = pdfHeight / (imgHeight * 0.75); // Adjust scale if necessary
+        const scaleRatio = Math.min(widthRatio, heightRatio);
+        
+        const newImgWidth = imgWidth * scaleRatio * 0.75; // Apply scale ratio
+        const newImgHeight = imgHeight * scaleRatio * 0.75; // Apply scale ratio
+  
+        // Center the image on the PDF page
+        const xOffset = (pdfWidth - newImgWidth) / 2;
+        const yOffset = (pdfHeight - newImgHeight) / 2;
+  
+        // Add the image to the PDF
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, newImgWidth, newImgHeight);
+  
+        // Save the PDF
         pdf.save('gantt.pdf');
+        
+        // Revert the styles to the original settings
+        ganttElement.style.overflow = 'auto';
+        ganttElement.style.height = 'calc(100vh - 150px)';
       });
     }
   }
-
   parseDateWithoutAdjustment(dateString: string): Date {
     const parts = dateString.split(' ');
     const [day, month, year] = parts[1].split('-');

@@ -43,6 +43,13 @@ ngx-gantt {
   flex: 1;
 }
 
+#gantt-container {
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+  overflow: hidden; /* Prevent any overflow */
+  height: 100%; /* Ensure full height is used */
+}
+
 .example-menu-item:hover {
   background-color: rgb(208, 208, 208);
 }

@@ -13,6 +13,14 @@
     }
 }
 
+.logo {
+    max-width: 100%;   /* Ensures the image does not exceed the width of its container */
+    height: auto;      /* Maintains the aspect ratio */
+    /* Additional styles */
+    display: block;    /* Removes any extra space below the image */
+    margin: 0 auto;    /* Centers the image horizontally if needed */
+  }
+
 #lines{ 
     border-bottom: 7px double;
     border-top: 2px solid;

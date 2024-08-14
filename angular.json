@@ -45,7 +45,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/siteworks_logo.png"
+              "src/src/logo.png"
             ],
             "styles": [
               "src/styles.scss",
@@ -133,7 +133,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets",
+              "assets",
               "src/siteworks_logo.png"
             ],
             "styles": [
