@@ -184,6 +184,8 @@ export class DataService {
   }
 
   createTask(task: any): Observable<null> {
+    console.log("task");
+    console.log(task);
     const URL = `${this.route}createTask`;
     return this.http.post<null>(URL, task);
   }

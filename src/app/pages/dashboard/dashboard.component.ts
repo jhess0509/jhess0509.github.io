@@ -105,6 +105,11 @@ selectedManager: any;
     });
     
     //this.ds.createRandomProjects(10);
+    this.loadChart();
+    
+  }
+  contextMenuPosition = { x: '0px', y: '0px' };
+  loadChart() {
     this.ds.getDict().subscribe((data) => {
       this.nameDictionary = data;
       this.ds.getAllItems().subscribe((data) => {
@@ -130,9 +135,7 @@ selectedManager: any;
         this.originalItems = [...this.items];
       });
     });
-    
   }
-  contextMenuPosition = { x: '0px', y: '0px' };
 
   parseDateWithoutGMT(dateString: string): Date {
     // Remove "GMT" part from the date string
@@ -366,19 +369,7 @@ editButtonClick(): void {
         });
     
         dialogRef.afterClosed().subscribe((reason: any) => {
-          this.ds.getDict().subscribe((data) => {
-            this.nameDictionary = data;
-            this.ds.getAllItems().subscribe((data) => {
-              this.groups = data.groups;
-              this.items = data.items;
-              this.items.forEach(task => {
-                task.foreman = this.getManagerName(task.id);
-              });
-              
-              this.originalGroups = [...this.groups];
-              this.originalItems = [...this.items];
-            });
-          });
+          this.loadChart();
         });
     // Modify the color property of the found item
     
@@ -431,16 +422,7 @@ deletedButtonClick(): void {
     const foundItem = this.items.find(item => item.id === this.selectedItem.id);
     this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
       (response) => {
-        this.ds.getAllItems().subscribe((data) => {
-          this.groups = data.groups;
-          this.items = data.items;
-          this.items.forEach(task => {
-            task.foreman = this.getManagerName(task.id);
-          });
-          
-          this.originalGroups = [...this.groups];
-          this.originalItems = [...this.items];
-        });
+        this.loadChart();
       },
       (error) => {
         console.error('Error updating project status:', error);
@@ -454,16 +436,7 @@ deletedMenuButtonClick(item): void {
     const foundItem = this.items.find(itm => itm.id === item.id);
     this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
       (response) => {
-        this.ds.getAllItems().subscribe((data) => {
-          this.groups = data.groups;
-          this.items = data.items;
-          this.items.forEach(task => {
-            task.foreman = this.getManagerName(task.id);
-          });
-          
-          this.originalGroups = [...this.groups];
-          this.originalItems = [...this.items];
-        });
+        this.loadChart();
       },
       (error) => {
         console.error('Error updating project status:', error);
@@ -580,11 +553,13 @@ dragMoved(event: GanttDragEvent) {
 
 dragEnded(event: GanttDragEvent) {
     //this.ds.updateTask(event.item);
+    console.log(event);
     const adjustedItem = {
       ...event.item,
       start: event.item.start - 14400, // Subtract 4 hours (14400 seconds) from start epoch
       end: event.item.end - 14400 // Subtract 4 hours (14400 seconds) from end epoch
     };
+    console.log(adjustedItem);
 
     this.ds.updateTask(adjustedItem).subscribe(
       (response) => {
@@ -663,19 +638,7 @@ switchChange() {
     });
 
     dialogRef.afterClosed().subscribe((reason: any) => {
-      this.ds.getDict().subscribe((data) => {
-        this.nameDictionary = data;
-        this.ds.getAllItems().subscribe((data) => {
-          this.groups = data.groups;
-          this.items = data.items;
-          this.items.forEach(task => {
-            task.foreman = this.getManagerName(task.id);
-          });
-          
-          this.originalGroups = [...this.groups];
-          this.originalItems = [...this.items];
-        });
-      });
+      this.loadChart();
     });
   }
 
