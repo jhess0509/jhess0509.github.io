@@ -24,7 +24,9 @@
                          bindValue="value" 
                          [multiple]="false"
                          searchPlaceholder="Select Task"
-                         [(ngModel)]="selectedTask">
+                         [(ngModel)]="selectedTask"
+                         (ngModelChange)="onTaskChange($event)"
+                         [ngClass]="{'is-invalid': !selectedTask && isFormSubmitted}">
               </ng-select>
             </div>
           </div>
@@ -47,7 +49,7 @@
             </div>
             <div class="col-md-6">
               <button (click)="cancel()" class="custom-button btn-sm mr-2" style="margin-bottom: 8px;">Cancel</button>
-              <button (click)="submit()" [disabled]="!isFormValid" class="custom-button btn-sm">Submit</button>
+              <button (click)="submit()" [disabled]="!isFormValid || !isTaskValid" class="custom-button btn-sm">Submit</button>
             </div>
           </div>
         </div>

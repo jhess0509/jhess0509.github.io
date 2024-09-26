@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from "@angular/core";
-import { FormGroup, FormControl } from "@angular/forms";
+import { FormGroup, FormControl, FormBuilder, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { DatatableComponent, SelectionType } from "@swimlane/ngx-datatable";
 import { Subscription } from "rxjs";
@@ -39,13 +39,14 @@ export class DynamicTablesComponent {
   selectedHolidayDate: any;
   startDate:any = {};
   activeProjects: Project[];
+  
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
   });
   taskrange = new FormGroup({
-    taskstart: new FormControl<Date | null>(null),
-    taskend: new FormControl<Date | null>(null),
+    taskstart: new FormControl<Date | null>(null, Validators.required),
+    taskend: new FormControl<Date | null>(null, Validators.required),
   });
   holidayRange = new FormGroup({
     holidayStart: new FormControl<Date | null>(null),
@@ -62,7 +63,7 @@ export class DynamicTablesComponent {
     this.rows = [...this.rows];
   }
 
-  constructor(private usersService: UsersService, private dataService: DataService, public dialog: MatDialog, private cdr: ChangeDetectorRef) { 
+  constructor(private usersService: UsersService, private dataService: DataService, public dialog: MatDialog) { 
   }
 
   ngOnInit() {
@@ -83,8 +84,14 @@ export class DynamicTablesComponent {
       this.taskrange.setValue(JSON.parse(taskRange));
     }
     const selectedTask = localStorage.getItem('selectedTask');
-    if (selectedTask) {
+
+    if (selectedTask && selectedTask !== "null" && selectedTask !== "undefined") {
+      console.log("Selected task:");
+      console.log(selectedTask);
       this.selectedTask = selectedTask;
+    } else {
+      console.log("No valid selected task in localStorage");
+      this.selectedTask = null;  // or handle it however you want when there's no valid task
     }
     const selectedTasks = localStorage.getItem('selectedTasks');
     if (selectedTasks) {
@@ -148,12 +155,19 @@ export class DynamicTablesComponent {
     this.activeProjects = [...this.activeProjects];
   }
   submit(){
-    this.selectedTasks.push({
-      task: this.selectedTask,
-      start: new Date(this.taskrange.get('taskstart').value),
-      end: new Date(this.taskrange.get('taskend').value)
-    });
-    this.selectedTasks = [...this.selectedTasks];
+    if (this.taskrange.valid) {
+      console.log('Task added:', this.taskrange.value);
+      this.selectedTasks.push({
+        task: this.selectedTask,
+        start: new Date(this.taskrange.get('taskstart').value),
+        end: new Date(this.taskrange.get('taskend').value)
+      });
+      this.selectedTasks = [...this.selectedTasks];
+      // Process your task submission
+    } else {
+      console.log('Please select both a start and end date');
+    }
+    
   }
   toggleEdit(row): void {
     row.isEditing = !row.isEditing;
@@ -314,11 +328,23 @@ export class DynamicTablesComponent {
     }
     
     if(this.selectedManager){
-      console.log(this.selectedManager);
       localStorage.setItem('selectedManager', this.selectedManager);
     }
     else{
       localStorage.removeItem('selectedManager');
+    }
+
+    if(this.selectedTask && typeof this.selectedTask === 'object'){
+      console.log("removiing item");
+      localStorage.removeItem('selectedTask');
+    }
+    else if (this.selectedTask !== null && this.selectedTask !== undefined) {
+      console.log("adding item");
+      console.log(this.selectedTask);
+      localStorage.setItem('selectedTask', this.selectedTask);
+    } 
+    else {
+      console.log("selectedTask is null or undefined, not adding to localStorage");
     }
 
     

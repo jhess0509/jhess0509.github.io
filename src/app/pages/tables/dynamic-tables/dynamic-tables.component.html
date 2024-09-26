@@ -73,7 +73,7 @@
             
                 <!-- Button Column -->
                 <div class="col-md-4 d-flex flex-column align-items-end justify-content-center text-center">
-                    <button (click)="submit()" class='custom-button btn-sm'>Add Task</button>
+                    <button (click)="submit()" [disabled]="taskrange.invalid || !selectedTask"  class='custom-button btn-sm'>Add Task</button>
                 </div>
             </div>
             
@@ -453,4 +453,7 @@
                 </ngx-datatable>  
             </div>
         </div>
+        <footer>
+            <p>&copy; SiteWorks. Version 1.14</p>
+        </footer>
 </div>

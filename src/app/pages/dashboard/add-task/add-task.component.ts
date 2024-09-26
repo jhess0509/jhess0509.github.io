@@ -5,6 +5,7 @@ import { UsersService } from 'src/app/logic/services/users.service';
 import { DataService } from '../data.service';
 import { GanttItem, GanttGroup } from '@worktile/gantt';
 import { Subscription } from 'rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'az-add-task',
@@ -17,6 +18,8 @@ export class AddTaskComponent {
 
   taskrange: FormGroup;
   isFormValid: boolean = false;
+  isFormSubmitted: boolean = false;
+  isTaskValid: boolean = false;  // Define the property
 
   items: GanttItem[] = [];
   groups: GanttGroup[] = [];
@@ -41,7 +44,15 @@ export class AddTaskComponent {
       this.groups = data.groups;
       this.items = data.items;
     });
+    this.watchSelectedTask();
 
+  }
+  watchSelectedTask() {
+    // Ensure that selectedTask is updated whenever it changes
+    this.selectedTask = null;
+    this.isTaskValid = this.selectedTask && Object.keys(this.selectedTask).length > 0;
+    console.log("validation");
+    console.log(this.isTaskValid);
   }
 
   ngOnInit(): void {
@@ -56,6 +67,12 @@ export class AddTaskComponent {
     });
   }
 
+  onTaskChange(task: any) {
+    this.selectedTask = task;
+    this.isTaskValid = task && Object.keys(task).length > 0;
+    console.log("validation");
+    console.log(this.isTaskValid);
+  }
 
 
   submit(){

@@ -19,6 +19,8 @@ import { AddTaskComponent } from "./add-task/add-task.component";
 import { EditTaskComponent } from "./edit-task/edit-task.component";
 import { format, parse } from "date-fns";
 import { start } from "repl";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const customViewType = 'custom';
 
@@ -103,6 +105,11 @@ selectedManager: any;
     });
     
     //this.ds.createRandomProjects(10);
+    this.loadChart();
+    
+  }
+  contextMenuPosition = { x: '0px', y: '0px' };
+  loadChart() {
     this.ds.getDict().subscribe((data) => {
       this.nameDictionary = data;
       this.ds.getAllItems().subscribe((data) => {
@@ -128,9 +135,7 @@ selectedManager: any;
         this.originalItems = [...this.items];
       });
     });
-    
   }
-  contextMenuPosition = { x: '0px', y: '0px' };
 
   parseDateWithoutGMT(dateString: string): Date {
     // Remove "GMT" part from the date string
@@ -140,6 +145,53 @@ selectedManager: any;
     return new Date(dateStringWithoutGMT);
   }
 
+  generatePDF() {
+    const ganttElement = document.getElementById('gantt-container');
+    if (ganttElement) {
+      // Ensure required styles for rendering are applied
+      ganttElement.style.overflow = 'auto';
+      ganttElement.style.height = 'calc(100vh - 150px)'; // Maintain height for rendering
+  
+      // Use html2canvas to capture the full content of the Gantt chart
+      html2canvas(ganttElement, {
+        scale: 2, // Higher scale for better resolution
+        useCORS: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+  
+        // Create a new jsPDF instance
+        const pdf = new jsPDF('landscape');
+        
+        // Set PDF dimensions (A4 size in mm)
+        const pdfWidth = 297; // A4 width in mm
+        const pdfHeight = 210; // A4 height in mm
+  
+        // Calculate dimensions to fit the image within the PDF page
+        const widthRatio = pdfWidth / (imgWidth * 0.75); // Adjust scale if necessary
+        const heightRatio = pdfHeight / (imgHeight * 0.75); // Adjust scale if necessary
+        const scaleRatio = Math.min(widthRatio, heightRatio);
+        
+        const newImgWidth = imgWidth * scaleRatio * 0.75; // Apply scale ratio
+        const newImgHeight = imgHeight * scaleRatio * 0.75; // Apply scale ratio
+  
+        // Center the image on the PDF page
+        const xOffset = (pdfWidth - newImgWidth) / 2;
+        const yOffset = (pdfHeight - newImgHeight) / 2;
+  
+        // Add the image to the PDF
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, newImgWidth, newImgHeight);
+  
+        // Save the PDF
+        pdf.save('gantt.pdf');
+        
+        // Revert the styles to the original settings
+        ganttElement.style.overflow = 'auto';
+        ganttElement.style.height = 'calc(100vh - 150px)';
+      });
+    }
+  }
   parseDateWithoutAdjustment(dateString: string): Date {
     const parts = dateString.split(' ');
     const [day, month, year] = parts[1].split('-');
@@ -317,19 +369,7 @@ editButtonClick(): void {
         });
     
         dialogRef.afterClosed().subscribe((reason: any) => {
-          this.ds.getDict().subscribe((data) => {
-            this.nameDictionary = data;
-            this.ds.getAllItems().subscribe((data) => {
-              this.groups = data.groups;
-              this.items = data.items;
-              this.items.forEach(task => {
-                task.foreman = this.getManagerName(task.id);
-              });
-              
-              this.originalGroups = [...this.groups];
-              this.originalItems = [...this.items];
-            });
-          });
+          this.loadChart();
         });
     // Modify the color property of the found item
     
@@ -379,20 +419,24 @@ completedButtonClick(): void {
 }
 deletedButtonClick(): void { 
   if(confirm("Are you sure to delete the Task?")) {
-    
     const foundItem = this.items.find(item => item.id === this.selectedItem.id);
     this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
       (response) => {
-        this.ds.getAllItems().subscribe((data) => {
-          this.groups = data.groups;
-          this.items = data.items;
-          this.items.forEach(task => {
-            task.foreman = this.getManagerName(task.id);
-          });
-          
-          this.originalGroups = [...this.groups];
-          this.originalItems = [...this.items];
-        });
+        this.loadChart();
+      },
+      (error) => {
+        console.error('Error updating project status:', error);
+      }
+    );
+  }
+    
+}
+deletedMenuButtonClick(item): void { 
+  if(confirm("Are you sure to delete the Task?")) {
+    const foundItem = this.items.find(itm => itm.id === item.id);
+    this.ds.convertToDeleted(parseInt(foundItem.id)).subscribe(
+      (response) => {
+        this.loadChart();
       },
       (error) => {
         console.error('Error updating project status:', error);
@@ -509,11 +553,13 @@ dragMoved(event: GanttDragEvent) {
 
 dragEnded(event: GanttDragEvent) {
     //this.ds.updateTask(event.item);
+    console.log(event);
     const adjustedItem = {
       ...event.item,
       start: event.item.start - 14400, // Subtract 4 hours (14400 seconds) from start epoch
       end: event.item.end - 14400 // Subtract 4 hours (14400 seconds) from end epoch
     };
+    console.log(adjustedItem);
 
     this.ds.updateTask(adjustedItem).subscribe(
       (response) => {
@@ -592,19 +638,7 @@ switchChange() {
     });
 
     dialogRef.afterClosed().subscribe((reason: any) => {
-      this.ds.getDict().subscribe((data) => {
-        this.nameDictionary = data;
-        this.ds.getAllItems().subscribe((data) => {
-          this.groups = data.groups;
-          this.items = data.items;
-          this.items.forEach(task => {
-            task.foreman = this.getManagerName(task.id);
-          });
-          
-          this.originalGroups = [...this.groups];
-          this.originalItems = [...this.items];
-        });
-      });
+      this.loadChart();
     });
   }
 
