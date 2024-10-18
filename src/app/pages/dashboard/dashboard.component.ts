@@ -564,9 +564,11 @@ dragEnded(event: GanttDragEvent) {
     this.ds.updateTask(adjustedItem).subscribe(
       (response) => {
         console.log('Project status updated successfully:', response);
+        this.loadChart();
       },
       (error) => {
         console.error('Error updating project status:', error);
+        this.loadChart();
       }
     );
 }
