@@ -123,7 +123,6 @@ selectedManager: any;
           start: format(item.start, "dd MMM yyyy HH:mm:ss"),
           end: format(item.end, "dd MMM yyyy HH:mm:ss")
         }));
-        data.items.sort((a, b) => b.start - a.start);
         this.groups = data.groups;
         this.items = formattedItems;
         this.items.forEach(task => {
