@@ -556,8 +556,8 @@ dragEnded(event: GanttDragEvent) {
     console.log(event);
     const adjustedItem = {
       ...event.item,
-      start: event.item.start - 14400, // Subtract 4 hours (14400 seconds) from start epoch
-      end: event.item.end - 14400 // Subtract 4 hours (14400 seconds) from end epoch
+      start: new Date(event.item.start * 1000).toLocaleString(), // Converts epoch to local date and time
+      end: new Date(event.item.end * 1000).toLocaleString()      // Converts epoch to local date and time
     };
     console.log(adjustedItem);
 

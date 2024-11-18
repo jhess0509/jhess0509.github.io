@@ -14,7 +14,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { CalendarModule, DateAdapter, MOMENT } from 'angular-calendar';
 import { SchedulerModule } from 'angular-calendar-scheduler';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import 'chart.js/dist/Chart.js';
 import { DayPilotModule } from '@daypilot/daypilot-lite-angular';
 import { DashboardService } from './dashboard.service';
@@ -63,6 +63,7 @@ export const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     NgxDatatableModule,
+    ToastrModule,
     NgMultiselectDropdown3Module,
     SelectDropDownModule,
   ],

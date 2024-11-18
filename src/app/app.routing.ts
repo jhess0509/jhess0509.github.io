@@ -4,6 +4,7 @@ import { AuthguardService } from './logic/services/authguard.service';
 import { ErrorComponent } from './pages/error/error.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'pages/dashboard', pathMatch: 'full' }, // Redirect root to pages/dashboard
   { path: 'pages', loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule)},
   { path: '**', component: ErrorComponent }
 ]; 

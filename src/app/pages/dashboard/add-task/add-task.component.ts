@@ -5,6 +5,7 @@ import { UsersService } from 'src/app/logic/services/users.service';
 import { DataService } from '../data.service';
 import { GanttItem, GanttGroup } from '@worktile/gantt';
 import { Subscription } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
 @Component({
@@ -25,9 +26,10 @@ export class AddTaskComponent {
   groups: GanttGroup[] = [];
   selectedProject: any = {};
   selectedTask: any = {};
+  isLoading = false;
   
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-  public dialogRef: MatDialogRef<AddTaskComponent>, private usersService: UsersService, private ds: DataService, private formBuilder: FormBuilder) {
+  public dialogRef: MatDialogRef<AddTaskComponent>, private usersService: UsersService, private ds: DataService, private formBuilder: FormBuilder, private toastr: ToastrService) {
     this.subs.add(this.ds.getTaskList()
         .subscribe((res:any) => {
           this.availableTasks = res.map(user => {
@@ -76,7 +78,7 @@ export class AddTaskComponent {
 
 
   submit(){
-    
+    this.isLoading = true;
     let task = {
       name: this.selectedTask,
       project_id: this.selectedProject,
@@ -84,13 +86,29 @@ export class AddTaskComponent {
       end: new Date(this.taskrange.get('end').value),
     };
 
-    try{
-      this.subs.add(this.ds.createTask(task)
-        .subscribe((res:any) => {
-          this.dialogRef.close({  });
-        }));
-    }
-    catch{
+    try {
+      this.subs.add(
+        this.ds.createTask(task).subscribe(
+          (res: any) => {
+            // Close dialog or handle success
+            this.toastr.success('Task created successfully!', 'Success');
+            this.dialogRef.close({});
+
+            // Set loading to false when the API call completes
+            this.isLoading = false;
+          },
+          (error) => {
+            // Handle error
+            console.error('Error:', error);
+            this.toastr.error('Failed to create task. Please try again.', 'Error');
+
+            // Set loading to false if there's an error
+            this.isLoading = false;
+          }
+        )
+      );
+    } catch {
+      this.isLoading = false; // Ensure loading state is reset in case of errors
     }
     
   }

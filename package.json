@@ -62,7 +62,7 @@
     "ngx-select-dropdown": "^3.3.0",
     "ngx-tethys": "^16.2.2",
     "ngx-timepicker": "^0.0.5",
-    "ngx-toastr": "^17.0.2",
+    "ngx-toastr": "^19.0.0",
     "node": "^20.2.0",
     "pace": "git+https://github.com/HubSpot/pace.git#v0.7.1",
     "pdfmake": "^0.2.7",
