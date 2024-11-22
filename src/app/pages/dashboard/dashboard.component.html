@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <div id="gantt-container" class="row mt-3" style="height: calc(100vh - 150px);"> <!-- Adjust the height to fit your layout -->
+  <div id="gantt-container" class="row mt-3" style="height: calc(100vh - 150px);">
     <div class="col-12" style="overflow: auto;">
       <ngx-gantt
         #gantt
@@ -60,15 +60,16 @@
         [async]="true"
         [childrenResolve]="childrenResolve"
         [viewOptions]="viewOptions"
+        [styles]="options.styles"
         (contextmenu)="onGanttContextMenu($event)"
         (barClick)="barClick($event)"
         (dragEnded)="dragEnded($event)"
-        style="width: 100%; height: 100%;"> <!-- Ensure full height -->
-
-        <!-- Add your Gantt chart configuration here -->
+      >
         <ngx-gantt-table>
           <ngx-gantt-column name="Active Projects" width="180px">
-            <ng-template #header let-item="item"> <strong> Active Projects </strong> </ng-template>
+            <ng-template #header let-item="item">
+              <strong> Active Projects </strong>
+            </ng-template>
             <ng-template #cell let-item="item">
               <span [cdkMenuTriggerFor]="columnMenu" [cdkMenuTriggerData]="{ item: item }" style="cursor: pointer;">
                 <strong>{{ item.title }}</strong>
@@ -76,7 +77,9 @@
             </ng-template>
           </ngx-gantt-column>
           <ngx-gantt-column name="Foremen" width="180px">
-            <ng-template #header let-item="item"> <strong> Foreman </strong> </ng-template>
+            <ng-template #header let-item="item">
+              <strong> Foreman </strong>
+            </ng-template>
             <ng-template #cell let-item="item">
               <span [cdkMenuTriggerFor]="columnMenu" [cdkMenuTriggerData]="{ item: item }" style="cursor: pointer;">
                 <strong>{{ getManagerName(item.id) }}</strong>
@@ -84,15 +87,35 @@
             </ng-template>
           </ngx-gantt-column>
         </ngx-gantt-table>
-
-        <!-- group template -->
+  
         <ng-template #group let-group="group" let-items="items">
-          <span class="text-primary"> <strong> {{ group.title }} </strong></span>
+          <span class="text-primary">
+            <strong> {{ group.title }} </strong>
+          </span>
         </ng-template>
         <ng-template #bar let-item="item">
-          <span [cdkMenuTriggerFor]="menu" style="color: #fff">&nbsp;&nbsp;{{ item.title }}</span>
+          <span 
+            *ngIf="!item.isHoliday; else noMenu" 
+            [cdkMenuTriggerFor]="menu" 
+            [ngStyle]="{
+              'font-size': '19px', 
+              'line-height': '24px', 
+              'padding': '4px',
+              'color': '#fff'
+            }"
+            style="cursor: pointer;">
+            &nbsp;&nbsp;{{ item.title }}
+          </span>
+          <ng-template #noMenu>
+            <span [ngStyle]="{
+              'font-size': '19px', 
+              'line-height': '24px', 
+              'padding': '4px',
+              'color': '#fff'
+            }"style="color: #fff;">&nbsp;&nbsp;{{ item.title }}</span>
+          </ng-template>
         </ng-template>
-        
+
       </ngx-gantt>
     </div>
   </div>

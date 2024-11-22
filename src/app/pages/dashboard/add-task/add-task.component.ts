@@ -45,6 +45,9 @@ export class AddTaskComponent {
       console.log(data);
       this.groups = data.groups;
       this.items = data.items;
+      
+      this.groups = data.groups.filter(group => group.id !== -1);  // Exclude holiday groups
+      this.items = data.items.filter(item => item.groupId !== -1);  // Exclude holiday items
     });
     this.watchSelectedTask();
 

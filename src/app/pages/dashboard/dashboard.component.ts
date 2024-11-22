@@ -1,11 +1,11 @@
-import {Component, ViewChild, AfterViewInit, ViewEncapsulation, ElementRef, Renderer2, ChangeDetectorRef} from "@angular/core";
+import {Component, ViewChild, AfterViewInit, ViewEncapsulation, ElementRef, Renderer2, ChangeDetectorRef, HostBinding} from "@angular/core";
 import {
   DayPilot,
   DayPilotCalendarComponent,
   DayPilotMonthComponent,
   DayPilotNavigatorComponent
 } from "@daypilot/daypilot-lite-angular";
-import { GanttBarClickEvent, GanttBaselineItem, GanttDragEvent, GanttGroup, GanttItem, GanttLineClickEvent, GanttLinkDragEvent, GanttSelectedEvent, GanttTableDragDroppedEvent, GanttTableDragEndedEvent, GanttTableDragEnterPredicateContext, GanttTableDragStartedEvent, GanttToolbarOptions, GanttView, GanttViewOptions, GanttViewType, NgxGanttComponent, registerView } from "@worktile/gantt";
+import { GanttBarClickEvent, GanttBaselineItem, GanttDate, GanttDragEvent, GanttGroup, GanttItem, GanttLineClickEvent, GanttLinkDragEvent, GanttPrintService, GanttSelectedEvent, GanttTableDragDroppedEvent, GanttTableDragEndedEvent, GanttTableDragEnterPredicateContext, GanttTableDragStartedEvent, GanttToolbarOptions, GanttView, GanttViewOptions, GanttViewType, NgxGanttComponent, registerView } from "@worktile/gantt";
 import { finalize, of } from 'rxjs';
 import { DashboardService } from "./dashboard.service";
 import { DataService } from "./data.service";
@@ -26,70 +26,94 @@ const customViewType = 'custom';
 
 registerView(customViewType, GanttViewCustom);
 
+
 @Component({
   selector: 'az-dashboard',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  providers: [ DashboardService ] 
+  providers: [ DashboardService, GanttPrintService ] 
 })
 
 export class DashboardComponent implements AfterViewInit { 
 
-  viewType = GanttViewType.day;
-  //viewType = customViewType;
+  //viewType = GanttViewType.day;
+  viewType: GanttViewType = customViewType as GanttViewType;
 
   showWeekend = true;
 
-statusFilters = [
-  { value: 'active', label: 'Active'},
-  { value: 'onHold', label: 'On Hold'},
-  { value: 'actionNeeded', label: 'Action Needed'}
-];
+  statusFilters = [
+    { value: 'active', label: 'Active'},
+    { value: 'onHold', label: 'On Hold'},
+    { value: 'actionNeeded', label: 'Action Needed'}
+  ];
 
-listForemanFilters: any[] = [];
-foremanFilters: any[] = [];
+  listForemanFilters: any[] = [];
+  foremanFilters: any[] = [];
 
 
-isBaselineChecked = false;
+  isBaselineChecked = false;
 
-isShowToolbarChecked = true;
+  isShowToolbarChecked = true;
 
-loading = false;
-expanded = true;
-showComponent = true;
+  loading = false;
+  expanded = true;
+  showComponent = true;
 
-statusFilter: string;
-statusFilterList: any[] = [];
+  statusFilter: string;
+  statusFilterList: any[] = [];
 
-foremanFilter: string;
+  foremanFilter: string;
 
-items: GanttItem[] = [];
-originalItems: GanttItem[] = [];
+  items: GanttItem[] = [];
+  originalItems: GanttItem[] = [];
 
-groups: GanttGroup[] = [];
-originalGroups: GanttGroup[] = [];
-selectedManager: any;
+  groups: GanttGroup[] = [];
+  originalGroups: GanttGroup[] = [];
+  selectedManager: any;
 
   baselineItems: GanttBaselineItem[] = [];
 
   viewOptions = {
       showWeekend: true,
+      styles: {
+        lineHeight: 100, // Set the line height for each row
+        barHeight: 100, // Adjust the height of the bars in the Gantt chart
+        barBackgroundColor: '#6698ff', // Set the background color of the bars
+        barHandleColor: '#cacaca', // Color of the handle on the bars
+        ganttContainerBackgroundColor: '#16537e', // Set the container background color
+        // You can add more styles based on the documentation or your needs
+      }
   };
 
   dropEnterPredicate = (event: GanttTableDragEnterPredicateContext) => {
     return true;
-};
+  };
 
-
+  @HostBinding('class.gantt-example-component') class = true;
   @ViewChild('gantt') ganttComponent: NgxGanttComponent;
   @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
   menuPosition: { x: string, y: string } = { x: '0px', y: '0px' };
 
+  
+
   selectedItem: any;
 
+  startDate: GanttDate;
+  endDate: GanttDate;
+  today: GanttDate;
+  dates: GanttDate[] = [];
 
-  constructor(private ds: DataService, private el: ElementRef, private renderer: Renderer2, private cdr: ChangeDetectorRef, public dialog: MatDialog) {
+  options = {
+    styles: {
+      lineHeight: 40, // Set the line height for each row
+      barHeight: 30, // Adjust the height of the bars in the Gantt chart
+      // You can add more styles based on the documentation or your needs
+    }
+  };
+
+
+  constructor(private printService: GanttPrintService, private ds: DataService, private el: ElementRef, private renderer: Renderer2, private cdr: ChangeDetectorRef, public dialog: MatDialog) {
 
   }
 
@@ -104,9 +128,38 @@ selectedManager: any;
       });
     });
     
-    //this.ds.createRandomProjects(10);
+    this.setTodayClass();    //this.ds.createRandomProjects(10);
+    this.setWeekendClasses();
     this.loadChart();
     
+  }
+  setTodayClass() {
+    const today = new Date();
+    const todayDate = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  
+    // Find the element corresponding to today's date by checking its position
+    const dateElements = document.querySelectorAll('.gantt-calendar svg text');
+  
+    dateElements.forEach((textElement: any) => {
+      const date = textElement.innerText.trim();
+      if (date === todayDate) {
+        textElement.classList.add('today'); // Add 'today' class to today's date
+      }
+    });
+  }
+  setWeekendClasses() {
+    const dateElements = document.querySelectorAll('.gantt-calendar svg text');
+  
+    dateElements.forEach((textElement: any) => {
+      const date = new Date(textElement.innerText.trim());
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+  
+      if (dayOfWeek === 6) { // Saturday
+        textElement.classList.add('saturday');
+      } else if (dayOfWeek === 0) { // Sunday
+        textElement.classList.add('sunday');
+      }
+    });
   }
   contextMenuPosition = { x: '0px', y: '0px' };
   loadChart() {
@@ -127,6 +180,8 @@ selectedManager: any;
         this.items = formattedItems;
         this.items.forEach(task => {
           task.foreman = this.getManagerName(task.id);
+          task.isHoliday = Number(task.group_id) === -1;
+          task.draggable = !(task.isHoliday)
         });
         
         

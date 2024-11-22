@@ -16,7 +16,7 @@ const viewOptions: GanttViewOptions = {
     end: new GanttDate().endOfYear().endOfWeek({ weekStartsOn: 1 }),
     addAmount: 1,
     addUnit: 'month',
-    fillDays: 1
+    fillDays: 1,
 };
 
 export class GanttViewCustom extends GanttView {
@@ -42,11 +42,7 @@ export class GanttViewCustom extends GanttView {
     }
 
     getPrimaryWidth() {
-        if (!this.options['showWeekend']) {
-            return this.getCellWidth() * 5;
-        } else {
-            return this.getCellWidth() * 7;
-        }
+        return this.getCellWidth() * 7; // Each week spans 7 days.
     }
 
     getDayOccupancyWidth(date: GanttDate): number {
@@ -59,64 +55,69 @@ export class GanttViewCustom extends GanttView {
     getPrimaryDatePoints(): GanttDatePoint[] {
         const days = eachDayOfInterval({ start: this.start.value, end: this.end.value });
         const points: GanttDatePoint[] = [];
-        const dayInWeekMap = {
-            '1': '周一',
-            '2': '周二',
-            '3': '周三',
-            '4': '周四',
-            '5': '周五',
-            '6': '周六',
-            '0': '周日'
-        };
-        for (let i = 0; i < days.length; i++) {
+        
+        // Iterate through each week
+        for (let i = 0; i < days.length; i += 7) { // Move in 7-day steps
             const start = new GanttDate(days[i]);
-            const isWeekend = start.isWeekend();
+            const monthName = start.format('MMMM'); // Get the current month's name
+    
+            // Add a new GanttDatePoint for each week showing the month name
             const point = new GanttDatePoint(
                 start,
-                `${dayInWeekMap[start.getDay()]}`,
-                i * this.getCellWidth() + this.getCellWidth() / 2,
+                monthName,
+                i * this.getCellWidth() + (this.getCellWidth() * 7) / 2, // Position the label centered over the week block
                 primaryDatePointTop,
                 {
-                    isWeekend,
-                    isToday: start.isToday()
+                    isWeekend: false, // We don't need to worry about weekends for the month label
+                    isToday: start.isToday() // Mark this as today's point if it's today
                 }
             );
-            if (isWeekend) {
-                point.style = { fill: '#ff9f73' };
-            }
-            if (start.isToday()) {
-                point.style = { fill: '#ff9f73' };
-            }
+            let styles: Partial<CSSStyleDeclaration> = {};
+            styles = { ...styles, fontWeight: 'bold', fill: '#000000' };
+            point.style = styles;
             points.push(point);
         }
+    
         return points;
     }
 
     getSecondaryDatePoints(): GanttDatePoint[] {
         const days = eachDayOfInterval({ start: this.start.value, end: this.end.value });
         const points: GanttDatePoint[] = [];
+        
         for (let i = 0; i < days.length; i++) {
             const start = new GanttDate(days[i]);
             const isWeekend = start.isWeekend();
+            const isToday = start.isToday();
+            
             const point = new GanttDatePoint(
                 start,
-                `${start.format('MM/d')}`,
+                `${start.format('d')}`, // Display day of the month
                 i * this.getCellWidth() + this.getCellWidth() / 2,
                 secondaryDatePointTop,
                 {
                     isWeekend,
-                    isToday: start.isToday()
+                    isToday
                 }
             );
+    
+            // Merge styles for weekends and today
+            let styles: Partial<CSSStyleDeclaration> = {};
             if (isWeekend) {
-                point.style = { fill: '#ff9f73' };
+                styles = { ...styles, fill: '#878282', fontStyle: 'italic' }; // Shade weekends
             }
-            if (start.isToday()) {
-                point.style = { fill: '#ff9f73' };
+            else if (isToday) {
+                styles = { ...styles, fill: '#ff9f73' }; // Highlight today
             }
+            else{
+                styles = { ...styles, fontWeight: 'bold' };
+            }
+    
+            point.style = styles;  // Apply merged styles
+    
             points.push(point);
         }
-
+    
         return points;
     }
 }
